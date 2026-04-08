@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/axios.js";
 import AdminEventTable from "./AdminEventTable";
 import AdminEventEditModal from "./AdminEventEditModal";
-import { Calendar, PlusCircle, MessageSquare, Users } from "lucide-react";
+import { Calendar, PlusCircle, MessageSquare, Users, Bell, UserCheck } from "lucide-react";
 
 const AdminEventListPage = () => {
   const [events, setEvents] = useState([]);
@@ -58,6 +58,20 @@ const AdminEventListPage = () => {
             <MessageSquare className="w-5 h-5" />
             View Contacts
           </button>
+          <Link
+            to="/admin/notifications"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+          >
+            <Bell className="w-5 h-5" />
+            Send Notification
+          </Link>
+          <Link
+            to="/admin/attendance"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"
+          >
+            <UserCheck className="w-5 h-5" />
+            Attendance
+          </Link>
         </div>
       </div>
 

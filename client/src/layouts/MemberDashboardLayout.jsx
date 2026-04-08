@@ -10,7 +10,7 @@ const MemberDashboardLayout = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a] text-white">
+      <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
       </div>
     );
@@ -21,7 +21,7 @@ const MemberDashboardLayout = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#0a0a0a] text-gray-100 overflow-hidden">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
       {/* Sidebar - Fixed on desktop, dismissible on mobile (optional enhancement) */}
       <DashboardSidebar />
 
@@ -30,7 +30,7 @@ const MemberDashboardLayout = () => {
         <DashboardNavbar />
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[#0a0a0a] p-4 lg:p-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-4 lg:p-8">
           <div className="container mx-auto max-w-7xl">
             <Outlet />
           </div>

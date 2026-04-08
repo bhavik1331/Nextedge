@@ -19,7 +19,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { isAuthenticated, isMember, logout, memberLogout } = useAuth();
-  const { user, activeViewRole, switchViewRole } = useAuthStore();
+  const { user } = useAuthStore();
 
   const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -184,7 +184,7 @@ const Navbar = () => {
           ))}
           {isAuthenticated || isMember ? (
             <Link
-              to={isAuthenticated ? "/admin/events" : "/member/payments"}
+              to={isAuthenticated ? "/admin/events" : "/member/dashboard"}
               className="
     ml-2 px-5 py-2 rounded-full
     bg-blue-600 text-white
@@ -232,17 +232,7 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* View Role Switcher (Admin/Treasurers only) */}
-          {user && ["ADMIN", "CLUB_HEAD", "TREASURER"].includes(user.trueRole) && (
-            <select
-              value={activeViewRole}
-              onChange={(e) => switchViewRole(e.target.value)}
-              className="px-2 py-1 bg-white/50 dark:bg-black/50 border border-gray-300 dark:border-gray-600 rounded text-xs focus:outline-none dark:text-white"
-            >
-              <option value={user.trueRole}>View As: {user.trueRole}</option>
-              <option value="MEMBER">View As: MEMBER</option>
-            </select>
-          )}
+
 
           {/* Logout Button (Only when authenticated) */}
           {(isAuthenticated || isMember) && (
@@ -340,7 +330,7 @@ const Navbar = () => {
             {isAuthenticated || isMember ? (
               <>
                 <Link
-                  to={isAuthenticated ? "/admin/events" : "/member/payments"}
+                  to={isAuthenticated ? "/admin/events" : "/member/dashboard"}
                   onClick={() => setMenuOpen(false)}
                   className="
               mt-2 px-4 py-2

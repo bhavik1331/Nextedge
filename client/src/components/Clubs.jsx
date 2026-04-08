@@ -23,7 +23,7 @@ const Clubs = () => {
   };
 
   return (
-    <section className="py-16 px-[5vw] bg-white dark:bg-black text-black dark:text-white min-h-screen transition-colors duration-300">
+    <section className="py-16 px-[5vw] bg-background text-foreground min-h-screen transition-colors duration-500">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -64,7 +64,7 @@ const Clubs = () => {
         viewport={{ once: true }}
       >
         <button
-          className="text-black dark:text-white border border-black/30 dark:border-white/30 rounded-lg px-6 py-2 hover:bg-black/10 dark:hover:bg-white/10 transition"
+          className="text-foreground border border-border rounded-lg px-6 py-2 hover:bg-muted transition duration-500"
           onClick={() => navigate("/clubs")}
         >
           Explore All Clubs →

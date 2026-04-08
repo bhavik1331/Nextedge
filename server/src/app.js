@@ -12,6 +12,7 @@ import notificationRoutes from "./notifications/notification.routes.js";
 import paymentRoutes from "./payments/payment.routes.js";
 import documentRoutes from "./documents/document.routes.js";
 import auditRoutes from "./audit/audit.routes.js";
+import attendanceRoutes from "./attendance/attendance.routes.js";
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/audit", auditRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

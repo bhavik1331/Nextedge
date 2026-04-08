@@ -1,15 +1,14 @@
 import express from 'express';
-import { sendSingleNotification, sendBulkNotification } from './notification.controller.js';
-// Add admin protecting middleware here if you have it
-// import { protect, admin } from '../middleware/authMiddleware.js';
+import { sendSingleNotification, sendBulkNotification, getMyNotifications } from './notification.controller.js';
+import { authenticateMember } from '../members/member.middleware.js';
 
 const router = express.Router();
 
-// Route to send notification to a single specific user
-// Protect these routes as per your auth setup (e.g., router.post('/send', protect, admin, sendSingleNotification);)
-router.post('/send', sendSingleNotification);
+// Route to get notifications for the logged-in member
+router.get('/my-notifications', authenticateMember, getMyNotifications);
 
-// Route to send bulk notifications to all members
+// Admin-facing routes
+router.post('/send', sendSingleNotification);
 router.post('/send-bulk', sendBulkNotification);
 
 export default router;

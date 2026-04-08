@@ -26,6 +26,7 @@ import AdminNotificationsPage from "./pages/AdminNotificationsPage";
 import MemberPaymentsPage from "./pages/MemberPaymentsPage";
 import AdminPaymentsPage from "./pages/AdminPaymentsPage";
 import AdminDocumentsPage from "./pages/AdminDocumentsPage";
+import AdminAttendancePage from "./pages/AdminAttendancePage";
 import RoleGuard from "./components/RoleGuard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import MemberDashboardLayout from "./layouts/MemberDashboardLayout";
@@ -34,6 +35,7 @@ import MemberEvents from "./pages/member/MemberEvents";
 import MemberAttendance from "./pages/member/MemberAttendance";
 import MemberPayments from "./pages/member/MemberPayments";
 import MemberProfile from "./pages/member/MemberProfile";
+import MemberNotifications from "./pages/member/MemberNotifications";
 
 const Layout = () => {
   return (
@@ -87,6 +89,7 @@ const router = createBrowserRouter(
         <Route path="/admin/events/:eventId/registrations" element={<AdminEventRegistrationsPage />} />
         <Route path="/admin/members" element={<AdminMembersPage />} />
         <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+        <Route path="/admin/attendance" element={<AdminAttendancePage />} />
       </Route>
 
       {/* SUPER ADMIN OR TREASURER ROUTES */}
@@ -107,7 +110,7 @@ const router = createBrowserRouter(
           <Route path="/member/attendance" element={<MemberAttendance />} />
           <Route path="/member/payments" element={<MemberPayments />} />
           <Route path="/member/profile" element={<MemberProfile />} />
-          <Route path="/member/notifications" element={<div>Notifications Page (Coming Soon)</div>} />
+          <Route path="/member/notifications" element={<MemberNotifications />} />
         </Route>
       </Route>
 

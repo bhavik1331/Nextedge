@@ -202,31 +202,31 @@ const Home = () => {
           {/* Value Cards */}
           <div className="mt-20 md:mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div
-              className="bg-white text-black rounded-2xl p-6 shadow-xl border border-gray-200"
+              className="bg-card text-foreground rounded-2xl p-6 shadow-xl border border-border transition-all hover:border-indigo-500/30"
               ref={addCard}
             >
               <h3 className="font-bold text-lg mb-2">Learn</h3>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-muted-foreground">
                 Interdisciplinary learning through hands-on collaboration.
               </p>
             </div>
 
             <div
-              className="bg-white text-black rounded-2xl p-6 shadow-xl border border-gray-200"
+              className="bg-card text-foreground rounded-2xl p-6 shadow-xl border border-border transition-all hover:border-indigo-500/30"
               ref={addCard}
             >
               <h3 className="font-bold text-lg mb-2">Build</h3>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-muted-foreground">
                 Student-led clubs working on real ideas and projects.
               </p>
             </div>
 
             <div
-              className="bg-white text-black rounded-2xl p-6 shadow-xl border border-gray-200"
+              className="bg-card text-foreground rounded-2xl p-6 shadow-xl border border-border transition-all hover:border-indigo-500/30"
               ref={addCard}
             >
               <h3 className="font-bold text-lg mb-2">Innovate</h3>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-muted-foreground">
                 Events and initiatives that push creativity forward.
               </p>
             </div>
@@ -235,17 +235,17 @@ const Home = () => {
       </section>
 
       {/* ================= FEATURES ================= */}
-      <section className="bg-white text-gray-900">
+      <section className="bg-background text-foreground transition-colors duration-500">
         <FeaturesSection />
       </section>
 
       {/* ================= CLUBS ================= */}
-      <section className="bg-white text-gray-900">
+      <section className="bg-background text-foreground transition-colors duration-500">
         <Clubs />
       </section>
 
       {/* ================= EVENTS ================= */}
-      <section className="bg-white text-gray-900">
+      <section className="bg-background text-foreground transition-colors duration-500">
         <UpcomingEvents />
       </section>
 

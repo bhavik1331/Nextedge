@@ -10,6 +10,7 @@ import Registration from "../events/registration.model.js";
 import Payment from "../payments/payment.model.js";
 import { uploadBuffer } from "../events/uploadToImageKit.js";
 import imagekit from "../config/imagekit.js";
+import Notification from "../notifications/notification.model.js";
 
 const MEMBER_REFRESH_COOKIE = "memberRefreshToken";
 
@@ -322,9 +323,14 @@ export const getDashboardStats = async (req, res) => {
       status: "Pending" 
     });
 
-    // 4. Recent Notifications (Placeholder for now since we don't have an in-app notification model yet)
-    // We can count them once we implement the Notification model.
-    const recentNotificationsCount = 0;
+    // 4. Recent Notifications
+    const email = req.member.email;
+    const recentNotificationsCount = await Notification.countDocuments({
+      $or: [
+        { recipientEmail: email },
+        { recipientType: 'BULK' }
+      ]
+    });
 
     res.status(200).json({
       success: true,

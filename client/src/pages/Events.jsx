@@ -13,35 +13,35 @@ function EventsSkeleton() {
   return (
     <div className="w-full mx-auto space-y-14 md:px-30">
       <section>
-        <div className="h-9 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-6" />
+        <div className="h-9 w-48 bg-muted rounded animate-pulse mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden"
+              className="bg-card rounded-xl shadow overflow-hidden"
             >
-              <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+              <div className="h-48 w-full bg-muted animate-pulse" />
               <div className="p-5 space-y-2">
-                <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-5 w-3/4 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-1/2 bg-muted rounded animate-pulse" />
               </div>
             </div>
           ))}
         </div>
       </section>
       <section>
-        <div className="h-9 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-6" />
+        <div className="h-9 w-40 bg-muted rounded animate-pulse mb-6" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4"
+              className="bg-card rounded-xl shadow p-6 space-y-4"
             >
               <div className="space-y-2">
-                <div className="h-6 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                <div className="h-6 w-full bg-muted rounded animate-pulse" />
+                <div className="h-4 w-2/3 bg-muted rounded animate-pulse" />
               </div>
-              <div className="h-48 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+              <div className="h-48 w-full bg-muted animate-pulse" />
             </div>
           ))}
         </div>
@@ -53,14 +53,14 @@ function EventsSkeleton() {
 function EventsErrorBlock({ message, onRetry, isRetrying }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="max-w-lg w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-xl p-8 text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-50 dark:bg-red-900/20">
+      <div className="max-w-lg w-full bg-card border border-border rounded-2xl shadow-xl p-8 text-center space-y-4">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-500/10">
           <AlertCircle className="w-8 h-8 text-red-500" />
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h2 className="text-xl font-semibold text-foreground">
           We could not load events
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{message}</p>
+        <p className="text-sm text-muted-foreground">{message}</p>
         <button
           type="button"
           onClick={onRetry}
@@ -220,10 +220,10 @@ const Events = () => {
 
   return (
     <>
-      <div className="min-h-screen pt-30">
+      <div className="min-h-screen pt-30 bg-background text-foreground transition-colors duration-500">
         <div className="w-full mx-auto space-y-14 md:px-30">
           <section>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+            <h2 className="text-3xl font-bold mb-6 text-foreground tracking-tight italic uppercase">
               Upcoming Events
             </h2>
 
@@ -245,7 +245,7 @@ const Events = () => {
                       key={event._id}
                       variants={item}
                       whileHover={{ scale: 1.02 }}
-                      className="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden transition"
+                      className="bg-card rounded-xl shadow-md overflow-hidden transition-all border border-border hover:border-indigo-500/30"
                     >
                       <Link to={`/events/${event._id}`} className="block">
                         {event.coverImage?.url ? (
@@ -255,7 +255,7 @@ const Events = () => {
                             className="h-48 w-full object-cover"
                           />
                         ) : (
-                          <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">
+                          <div className="h-48 bg-muted flex items-center justify-center text-muted-foreground">
                             No Image
                           </div>
                         )}
@@ -263,33 +263,33 @@ const Events = () => {
                         <div className="p-5">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
                             <span
-                              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                              className={`inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${
                                 (event.accessType || "public") === "members"
-                                  ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300"
-                                  : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                                  ? "bg-indigo-500/10 text-indigo-500 border border-indigo-500/20"
+                                  : "bg-muted text-muted-foreground border border-border"
                               }`}
                             >
                               {(event.accessType || "public") === "members" ? "Members only" : "Public"}
                             </span>
                           </div>
-                          <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-100">
+                          <h3 className="font-bold text-xl text-foreground mb-1">
                             {event.title}
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-muted-foreground font-medium">
                             {start.toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
                               year: "numeric",
                             })}
                           </p>
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-muted-foreground mt-1 opacity-70">
                             {start.toLocaleTimeString("en-US", {
                               hour: "numeric",
                               minute: "2-digit",
                               hour12: true,
                             })}
                           </p>
-                          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                          <div className="mt-3 pt-3 border-t border-border">
                             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Starts in</p>
                             <CountdownTimer
                               targetDate={event.eventStartDate || event.date}
@@ -298,7 +298,7 @@ const Events = () => {
                             />
                           </div>
                           {(event.registrationStartDate || event.registrationEndDate) && (
-                            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <div className="mt-3 pt-3 border-t border-border">
                               <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Registration</p>
                               <RegistrationWindow
                                 registrationStartDate={event.registrationStartDate}
@@ -317,7 +317,7 @@ const Events = () => {
           </section>
 
           <section>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100">
+            <h2 className="text-3xl font-bold mb-6 text-foreground tracking-tight italic uppercase">
               Past Events
             </h2>
 
@@ -339,7 +339,7 @@ const Events = () => {
                       key={event._id}
                       variants={item}
                       whileHover={{ scale: 1.02 }}
-                      className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4 hover:shadow-lg transition"
+                      className="bg-card rounded-xl shadow-sm p-6 space-y-4 hover:shadow-lg transition-all border border-border"
                     >
                       <Link to={`/events/${event._id}`} className="block">
                         <div>
@@ -366,10 +366,10 @@ const Events = () => {
                           <img
                             src={event.coverImage.url}
                             alt={event.title}
-                            className="h-48 w-full object-cover"
+                            className="h-48 w-full object-cover rounded-lg"
                           />
                         ) : (
-                          <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">
+                          <div className="h-48 bg-muted flex items-center justify-center text-muted-foreground rounded-lg">
                             No Image
                           </div>
                         )}

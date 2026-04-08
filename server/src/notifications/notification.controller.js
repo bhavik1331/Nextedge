@@ -1,5 +1,6 @@
 import { sendEmail } from '../utils/mailer.js';
 import Member from '../members/member.model.js'; // Assuming you have a member model to fetch users from
+import Notification from './notification.model.js';
 
 // Function to generate an HTML email template for events
 const generateEventEmailTemplate = (eventName, date, time, venue, customizedMessage) => {
@@ -33,7 +34,7 @@ const generateEventEmailTemplate = (eventName, date, time, venue, customizedMess
 // @access  Admin only
 export const sendSingleNotification = async (req, res, next) => {
   try {
-    const { email, subject, message, eventName, date, time, venue } = req.body;
+    const { email, subject, message, eventName, date, time, venue, clubName } = req.body;
 
     if (!email || !subject || !message) {
       return res.status(400).json({ success: false, message: 'Please provide email, subject, and message' });
@@ -47,10 +48,24 @@ export const sendSingleNotification = async (req, res, next) => {
       message
     );
 
+    // 1. Send Email
     await sendEmail({
       to: email,
       subject: subject,
       html: htmlContent,
+    });
+
+    // 2. Save to Database for In-App Inbox
+    await Notification.create({
+      subject,
+      message,
+      eventName,
+      date,
+      time,
+      venue,
+      recipientType: 'SINGLE',
+      recipientEmail: email,
+      clubName: clubName || 'NextEdge Society'
     });
 
     res.status(200).json({ success: true, message: 'Notification sent successfully' });
@@ -64,7 +79,7 @@ export const sendSingleNotification = async (req, res, next) => {
 // @access  Admin only
 export const sendBulkNotification = async (req, res, next) => {
   try {
-    const { subject, message, eventName, date, time, venue } = req.body;
+    const { subject, message, eventName, date, time, venue, clubName } = req.body;
 
     if (!subject || !message) {
       return res.status(400).json({ success: false, message: 'Please provide subject and message' });
@@ -85,8 +100,19 @@ export const sendBulkNotification = async (req, res, next) => {
       message
     );
 
-    // Using Promise.all to send emails concurrently
-    // For large lists, it's better to implement a queue system (like BullMQ)
+    // 1. Save to Database for In-App Inbox (Save once for all as BULK)
+    await Notification.create({
+      subject,
+      message,
+      eventName,
+      date,
+      time,
+      venue,
+      recipientType: 'BULK',
+      clubName: clubName || 'NextEdge Society'
+    });
+
+    // 2. Send Emails concurrently
     const emailPromises = members.map(member => {
       if (member.email) {
          return sendEmail({
@@ -95,9 +121,10 @@ export const sendBulkNotification = async (req, res, next) => {
            html: htmlContent,
          }).catch(err => {
            console.error(`Failed to send email to ${member.email}:`, err);
-           return null; // Resolve with null so Promise.all won't fail for the whole batch
+           return null; 
          });
       }
+      return null;
     });
 
     await Promise.all(emailPromises);
@@ -105,6 +132,35 @@ export const sendBulkNotification = async (req, res, next) => {
     res.status(200).json({ 
       success: true, 
       message: `Bulk notification process completed for ${members.length} members`
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get notifications for a member
+// @route   GET /api/notifications/my-notifications
+// @access  Member only
+export const getMyNotifications = async (req, res, next) => {
+  try {
+    const email = req.member?.email; // Use req.member from authenticateMember
+
+    if (!email) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
+
+    // Fetch notifications either sent to this email specifically or sent to ALL (BULK)
+    const notifications = await Notification.find({
+      $or: [
+        { recipientEmail: email },
+        { recipientType: 'BULK' }
+      ]
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: notifications.length,
+      notifications
     });
   } catch (error) {
     next(error);

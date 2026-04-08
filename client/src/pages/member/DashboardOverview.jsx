@@ -26,22 +26,22 @@ import { api } from "../../api/axios";
 
 // Reuseable Stat Card component
 const StatCard = ({ title, value, icon: Icon, color, percentage, label }) => (
-  <div className="bg-[#0f0f0f] p-6 lg:p-8 rounded-2xl border border-gray-800 shadow-xl flex items-start gap-4 hover:border-gray-700 transition-all group overflow-hidden relative">
-    <div className={`p-4 rounded-xl ${color} bg-opacity-20 text-white shadow-lg`}>
+  <div className="bg-card p-6 lg:p-8 rounded-2xl border border-border shadow-md flex items-start gap-4 hover:border-indigo-500/30 transition-all group overflow-hidden relative">
+    <div className={`p-4 rounded-xl ${color} bg-opacity-20 text-indigo-500 shadow-sm transition-colors`}>
       <Icon className="w-6 h-6" />
     </div>
     
     <div>
-       <p className="text-gray-400 text-sm font-medium mb-1 tracking-wide uppercase">{title}</p>
-       <h3 className="text-3xl font-bold text-white mb-2 leading-none">{value}</h3>
+       <p className="text-muted-foreground text-sm font-medium mb-1 tracking-wide uppercase">{title}</p>
+       <h3 className="text-3xl font-bold text-foreground mb-2 leading-none">{value}</h3>
        <div className="flex items-center gap-1.5 min-h-[20px]">
           <span className="text-indigo-400 text-xs font-bold font-mono py-0.5 px-1.5 rounded-md bg-indigo-500/10 border border-indigo-500/20">{percentage}</span>
-          <p className="text-gray-500 text-[11px] font-medium leading-tight">{label}</p>
+          <p className="text-muted-foreground text-[11px] font-medium leading-tight">{label}</p>
        </div>
     </div>
 
     {/* Subtle gradient overlay on hover */}
-    <div className={`absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-700 blur-3xl pointer-events-none rounded-full bg-white`}></div>
+    <div className={`absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-[0.05] transition-opacity duration-700 blur-3xl pointer-events-none rounded-full bg-indigo-500`}></div>
   </div>
 );
 
@@ -93,10 +93,10 @@ const DashboardOverview = () => {
       <div className="animate-pulse space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-gray-900 border border-gray-800 h-40 rounded-2xl"></div>
+            <div key={i} className="bg-card border border-border h-40 rounded-2xl"></div>
           ))}
         </div>
-        <div className="h-[450px] bg-gray-900 border border-gray-800 rounded-2xl"></div>
+        <div className="h-[450px] bg-card border border-border rounded-2xl"></div>
       </div>
     );
   }
@@ -107,16 +107,16 @@ const DashboardOverview = () => {
       <div className="mb-12 relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <h1 className="text-4xl font-extrabold text-white tracking-tight">
+            <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
               Hello, <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-500">{member?.name || "Member"}</span>! 👋
             </h1>
-            <p className="text-gray-400 text-lg max-w-2xl font-normal leading-relaxed">
+            <p className="text-muted-foreground text-lg max-w-2xl font-normal leading-relaxed">
               Welcome back to your <span className="text-indigo-400 font-semibold italic">NextEdge Society</span> control center. Here's a look at your current club status and recent activity.
             </p>
           </div>
-          <div className="flex items-center space-x-3 bg-indigo-500/10 border border-indigo-500/20 px-5 py-3 rounded-2xl shadow-inner-white transition-transform hover:scale-105 duration-300">
+          <div className="flex items-center space-x-3 bg-indigo-500/10 border border-indigo-500/20 px-5 py-3 rounded-2xl transition-transform hover:scale-105 duration-300">
             <CalendarDays className="w-5 h-5 text-indigo-400" />
-            <span className="text-sm font-bold text-indigo-100">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+            <span className="text-sm font-bold text-indigo-500 dark:text-indigo-100">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
           </div>
         </div>
         
@@ -164,13 +164,13 @@ const DashboardOverview = () => {
       {/* Analytics Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Attendance Chart */}
-        <div className="lg:col-span-2 bg-[#0f0f0f] p-8 rounded-2xl border border-gray-800 shadow-2xl relative overflow-hidden">
+        <div className="lg:col-span-2 bg-card p-8 rounded-2xl border border-border shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between mb-8 relative z-10">
-            <h4 className="text-xl font-bold text-white flex items-center gap-3">
+            <h4 className="text-xl font-bold text-foreground flex items-center gap-3">
               <TrendingUp className="w-6 h-6 text-indigo-400" />
               Attendance Timeline
             </h4>
-            <select className="bg-gray-900 border border-gray-800 text-gray-300 text-xs font-bold rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all cursor-pointer">
+            <select className="bg-background border border-border text-foreground text-xs font-bold rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all cursor-pointer">
               <option>Last 6 Months</option>
               <option>Last Year</option>
             </select>
@@ -203,9 +203,9 @@ const DashboardOverview = () => {
                    dx={-10}
                 />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: "#0f0f0f", border: "1px solid #333", borderRadius: "12px", boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.4)", color: "#fff" }}
+                  contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", color: "var(--foreground)" }}
                   itemStyle={{ color: "#818cf8" }}
-                  cursor={{ stroke: '#444', strokeWidth: 1 }}
+                  cursor={{ stroke: 'var(--border)', strokeWidth: 1 }}
                 />
                 <Area
                   type="monotone"
@@ -222,9 +222,9 @@ const DashboardOverview = () => {
         </div>
 
         {/* Recent Activity / Side Card */}
-        <div className="bg-[#0f0f0f] p-8 rounded-2xl border border-gray-800 shadow-2xl flex flex-col relative group">
+        <div className="bg-card p-8 rounded-2xl border border-border shadow-lg flex flex-col relative group">
           <div className="flex items-center justify-between mb-8">
-            <h4 className="text-xl font-bold text-white flex items-center gap-3">
+            <h4 className="text-xl font-bold text-foreground flex items-center gap-3">
               <ShieldCheck className="w-6 h-6 text-emerald-400" />
               Recent Activity
             </h4>
@@ -241,18 +241,18 @@ const DashboardOverview = () => {
               <div key={idx} className="flex gap-4 group cursor-pointer">
                 <div className="relative">
                   <div className={`w-3 h-3 rounded-full mt-1.5 ${activity.type === 'success' ? 'bg-emerald-500' : 'bg-indigo-500'} shadow-[0_0_8px_rgba(16,185,129,0.5)]`}></div>
-                  {idx !== 3 && <div className="absolute top-4 left-[5.5px] w-[1px] h-12 bg-gray-800"></div>}
+                  {idx !== 3 && <div className="absolute top-4 left-[5.5px] w-[1px] h-12 bg-border"></div>}
                 </div>
                 <div>
-                   <p className="text-sm font-bold text-gray-200 group-hover:text-white transition-colors">{activity.title}</p>
-                   <p className="text-xs text-gray-400 mb-1 leading-relaxed">{activity.desc}</p>
+                   <p className="text-sm font-bold text-foreground group-hover:text-indigo-500 transition-colors">{activity.title}</p>
+                   <p className="text-xs text-muted-foreground mb-1 leading-relaxed">{activity.desc}</p>
                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-mono font-bold">{activity.time}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <button className="mt-8 w-full py-4 bg-gray-900 border border-gray-800 text-gray-200 rounded-xl font-bold text-sm hover:bg-gray-800 transition-all hover:border-gray-700 flex items-center justify-center gap-3 shadow-md active:scale-95 duration-200">
+          <button className="mt-8 w-full py-4 bg-muted border border-border text-foreground rounded-xl font-bold text-sm hover:bg-muted/80 transition-all hover:border-indigo-500/30 flex items-center justify-center gap-3 shadow-md active:scale-95 duration-200">
             Download Report
             <ArrowUpRight className="w-4 h-4" />
           </button>

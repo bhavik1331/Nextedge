@@ -70,7 +70,7 @@ const InputField = ({
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+      className="w-full px-4 py-2 border border-border shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-background text-foreground placeholder-gray-400 rounded-lg outline-none transition-all"
     />
   </div>
 );
@@ -99,7 +99,7 @@ const SelectField = ({
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 appearance-none pr-8"
+      className="w-full px-4 py-2 border border-border shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-background text-foreground appearance-none pr-8 rounded-lg outline-none transition-all"
     >
       {options.map((option, index) => (
         <option key={index} value={option}>
@@ -173,11 +173,11 @@ const MembershipForm = ({
                 value={interest}
                 checked={formData.interests.includes(interest)}
                 onChange={handleCheckboxChange}
-                className="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 bg-white dark:bg-gray-700"
+                className="h-4 w-4 text-blue-600 border-border rounded focus:ring-blue-500 bg-background"
               />
               <label
                 htmlFor={interest}
-                className="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                className="ml-2 text-sm text-foreground"
               >
                 {interest}
               </label>
@@ -200,7 +200,7 @@ const MembershipForm = ({
           value={formData.message}
           onChange={handleInputChange}
           placeholder="Tell us a bit about yourself and why you want to join..."
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400"
+          className="w-full px-4 py-2 border border-border shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-background text-foreground placeholder-gray-400 rounded-lg outline-none transition-all"
         ></textarea>
       </div>
 
@@ -431,7 +431,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300 ">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
       {/* Header/Banner Section */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
@@ -470,14 +470,14 @@ const Contact = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700"
+              className="bg-card p-6 rounded-xl shadow-2xl border border-border"
             >
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 border-b pb-2 border-gray-100 dark:border-gray-700">
                 Contact Information
               </h2>
               <div className="space-y-4">
                 {/* Location */}
-                <div className="flex items-start text-gray-600 dark:text-gray-300">
+                <div className="flex items-start text-muted-foreground">
                   <MapPin className="w-6 h-6 text-blue-500 mr-3 mt-1 flex-shrink-0" />
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-white">
@@ -521,7 +521,7 @@ const Contact = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700"
+              className="bg-card p-6 rounded-xl shadow-2xl border border-border"
             >
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 border-b pb-2 border-gray-100 dark:border-gray-700">
                 Office Hours
@@ -530,7 +530,7 @@ const Contact = () => {
                 {OFFICE_HOURS.map((item, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-center text-gray-600 dark:text-gray-300"
+                    className="flex justify-between items-center text-muted-foreground"
                   >
                     <div className="flex items-center">
                       <Clock className="w-5 h-5 text-blue-500 mr-2" />
@@ -558,7 +558,7 @@ const Contact = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700"
+            className="lg:col-span-2 bg-card rounded-xl shadow-2xl border border-border"
           >
             {/* Tabs Navigation */}
             <div className="flex border-b border-gray-200 dark:border-gray-700">
@@ -566,8 +566,8 @@ const Contact = () => {
                 onClick={() => setActiveTab("membership")}
                 className={`py-3 px-6 text-lg font-medium rounded-tl-xl transition-colors duration-150 ${
                   activeTab === "membership"
-                    ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-gray-50 dark:bg-gray-700"
-                    : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+                    ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-muted"
+                    : "text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
                 }`}
               >
                 Membership
