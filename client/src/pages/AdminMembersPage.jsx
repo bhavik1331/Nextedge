@@ -6,6 +6,7 @@ import { Users, ArrowLeft, PlusCircle, Loader2, Mail, Lock } from "lucide-react"
 const AdminMembersPage = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
@@ -30,7 +31,13 @@ const AdminMembersPage = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
+    const trimmedName = name.trim();
     const trimmedEmail = email.trim().toLowerCase();
+    
+    if (!trimmedName) {
+      setMessage({ type: "error", text: "Name is required." });
+      return;
+    }
     if (!trimmedEmail) {
       setMessage({ type: "error", text: "Email is required." });
       return;
@@ -39,10 +46,12 @@ const AdminMembersPage = () => {
       setMessage({ type: "error", text: "Password must be at least 6 characters." });
       return;
     }
+    
     setCreateLoading(true);
     try {
-      await api.post("/members", { email: trimmedEmail, password });
+      await api.post("/members", { name: trimmedName, email: trimmedEmail, password });
       setMessage({ type: "success", text: "Member account created. Share the login link and password with them." });
+      setName("");
       setEmail("");
       setPassword("");
       fetchMembers();
@@ -95,6 +104,20 @@ const AdminMembersPage = () => {
                   {message.text}
                 </p>
               )}
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="John Doe"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Email
@@ -107,6 +130,7 @@ const AdminMembersPage = () => {
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                 />
               </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Password (min 6 characters)
@@ -120,6 +144,7 @@ const AdminMembersPage = () => {
                   autoComplete="off"
                 />
               </div>
+              
               <button
                 type="submit"
                 disabled={createLoading}
@@ -153,7 +178,9 @@ const AdminMembersPage = () => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-700 text-left">
+                    <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Name</th>
                     <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Email</th>
+                    <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Role</th>
                     <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Status</th>
                     <th className="px-4 py-3 font-medium text-gray-700 dark:text-gray-300">Created</th>
                   </tr>
@@ -161,7 +188,30 @@ const AdminMembersPage = () => {
                 <tbody>
                   {members.map((m) => (
                     <tr key={m._id} className="border-t border-gray-200 dark:border-gray-600">
+                      <td className="px-4 py-3 font-semibold text-gray-800 dark:text-gray-200">{m.name || "—"}</td>
                       <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{m.email}</td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={m.role}
+                          onChange={async (e) => {
+                            const newRole = e.target.value;
+                            if(window.confirm(`Are you sure you want to promote ${m.email} to ${newRole}?`)) {
+                              try {
+                                await api.put(`/members/${m._id}/role`, { role: newRole });
+                                fetchMembers(); // Refresh List
+                              } catch(error) {
+                                alert(error.response?.data?.message || "Failed to assign role.");
+                              }
+                            }
+                          }}
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                          <option value="MEMBER">Member</option>
+                          <option value="CLUB_HEAD">Club Head</option>
+                          <option value="TREASURER">Treasurer</option>
+                          <option value="ADMIN">Admin</option>
+                        </select>
+                      </td>
                       <td className="px-4 py-3">
                         <span
                           className={`px-2 py-0.5 rounded text-xs font-medium ${

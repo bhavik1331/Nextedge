@@ -2,6 +2,8 @@ import Event from "./event.model.js";
 import { uploadBuffer } from "./uploadToImageKit.js";
 import imagekit from "../config/imagekit.js";
 import { isValidYoutubeUrl } from "../utils/youtube.js";
+import { sendEmail } from "../utils/mailer.js";
+import Member from "../members/member.model.js";
 
 /** Normalize event for API: ensure eventStartDate and date; use UTC. */
 function normalizeEvent(event) {
@@ -76,6 +78,47 @@ export const createEvent = async (req, res) => {
     if (coverImage) eventData.coverImage = coverImage;
 
     const event = await Event.create(eventData);
+
+    // Send email notification to all members about the new event
+    try {
+      const members = await Member.find().select('email');
+      if (members && members.length > 0) {
+        const htmlContent = `
+          <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #0056b3; padding: 20px; text-align: center; color: white;">
+              <h2 style="margin: 0;">New Event Created!</h2>
+            </div>
+            <div style="padding: 20px;">
+              <h3 style="color: #0056b3;">${eventData.title}</h3>
+              <p>${eventData.description}</p>
+              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                <p style="margin: 5px 0;"><strong>📅 Date:</strong> ${new Date(eventStartDate).toLocaleDateString()}</p>
+                <p style="margin: 5px 0;"><strong>📍 Location:</strong> ${eventData.location || "TBA"}</p>
+              </div>
+              <br>
+              <p>Check out our portal for more details and to register!</p>
+              <br>
+              <p style="margin: 0;">Best regards,</p>
+              <p style="margin: 0; font-weight: bold;">NextEdge Society Team</p>
+            </div>
+          </div>
+        `;
+        
+        const emailPromises = members.map(member => {
+          if (member.email) {
+            return sendEmail({
+              to: member.email,
+              subject: `New Event: ${eventData.title}`,
+              html: htmlContent,
+            }).catch(e => console.error(`Failed sending new event email to ${member.email}`));
+          }
+        });
+        await Promise.all(emailPromises);
+      }
+    } catch (emailError) {
+      console.error("Error sending new event email notifications:", emailError);
+    }
+
     res.status(201).json({ success: true, event: normalizeEvent(event) });
   } catch (error) {
     console.error("CREATE EVENT ERROR:", error);

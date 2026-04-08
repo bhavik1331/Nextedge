@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { api, setAuthToken } from "../api/axios.js";
+import { useAuthStore } from "../store/authStore";
 
 const AuthContext = createContext(null);
 
@@ -19,6 +20,10 @@ export const AuthProvider = ({ children }) => {
   const [memberAccessToken, setMemberAccessToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Zustand Store binding function
+  const storeSetAuth = useAuthStore((state) => state.setAuth);
+  const storeClearAuth = useAuthStore((state) => state.clearAuth);
+
   // Use member token for API when member is logged in, else admin token
   useEffect(() => {
     setAuthToken(memberAccessToken || accessToken);
@@ -36,6 +41,8 @@ export const AuthProvider = ({ children }) => {
         setAdmin(adminData);
         setMember(null);
         setMemberAccessToken(null);
+        // Hybrid: Force admin role into Zustand
+        storeSetAuth({ id: adminData._id, name: adminData.username, email: adminData.username, role: 'ADMIN' });
         return { success: true };
       }
       return { success: false, message: response.data.message };
@@ -60,6 +67,8 @@ export const AuthProvider = ({ children }) => {
         setMember(memberData);
         setAccessToken(null);
         setAdmin(null);
+        // Sync normal member role into Zustand
+        storeSetAuth({ id: memberData._id, name: memberData.name || memberData.email, email: memberData.email, role: memberData.role });
         return { success: true };
       }
       return { success: false, message: response.data.message };
@@ -80,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setAccessToken(null);
       setAdmin(null);
+      storeClearAuth();
     }
   };
 
@@ -91,6 +101,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setMemberAccessToken(null);
       setMember(null);
+      storeClearAuth();
     }
   };
 
@@ -103,6 +114,7 @@ export const AuthProvider = ({ children }) => {
         setAdmin(adminData);
         setMember(null);
         setMemberAccessToken(null);
+        storeSetAuth({ id: adminData._id, name: adminData.username, email: adminData.username, role: 'ADMIN' });
         return true;
       }
     } catch (e) {
@@ -115,6 +127,7 @@ export const AuthProvider = ({ children }) => {
         const { accessToken: newToken, member: memberData } = memberRes.data;
         setMemberAccessToken(newToken);
         setMember(memberData);
+        storeSetAuth({ id: memberData._id, name: memberData.name || memberData.email, email: memberData.email, role: memberData.role });
         return true;
       }
     } catch (e) {

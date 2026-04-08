@@ -32,7 +32,7 @@ const UpcomingEvents = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          "http://localhost:3000/api/events/upcoming",
+          "/api/events/upcoming",
         );
 
         if (

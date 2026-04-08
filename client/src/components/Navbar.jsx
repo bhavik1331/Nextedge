@@ -8,6 +8,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SunIcon } from "./ui/sun";
 import { MoonIcon } from "./ui/moon";
 import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/authStore";
+
 const Navbar = () => {
   // Initialize dark mode from localStorage
   const [darkMode, setDarkMode] = useState(() => {
@@ -16,7 +18,8 @@ const Navbar = () => {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isMember, logout, memberLogout } = useAuth();
+  const { user, activeViewRole, switchViewRole } = useAuthStore();
 
   const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -77,7 +80,8 @@ const Navbar = () => {
   ];
 
   const handleLogout = async () => {
-    await logout();
+    if (isAuthenticated) await logout();
+    else await memberLogout();
     setMenuOpen(false);
   };
   gsap.registerPlugin(ScrollTrigger);
@@ -178,9 +182,9 @@ const Navbar = () => {
               />
             </NavLink>
           ))}
-          {isAuthenticated && (
+          {isAuthenticated || isMember ? (
             <Link
-              to="/admin/events"
+              to={isAuthenticated ? "/admin/events" : "/member/payments"}
               className="
     ml-2 px-5 py-2 rounded-full
     bg-blue-600 text-white
@@ -191,7 +195,22 @@ const Navbar = () => {
   "
               onClick={() => setMenuOpen(false)}
             >
-              Admin
+              Dashboard
+            </Link>
+          ) : (
+            <Link
+              to="/member-login"
+              className="
+    ml-2 px-5 py-2 rounded-full
+    bg-blue-600 text-white
+    font-semibold text-sm
+    shadow-lg shadow-blue-600/30
+    hover:bg-blue-500 hover:scale-[1.05]
+    transition-all duration-300
+  "
+              onClick={() => setMenuOpen(false)}
+            >
+              Login
             </Link>
           )}
         </div>
@@ -213,8 +232,20 @@ const Navbar = () => {
             )}
           </button>
 
+          {/* View Role Switcher (Admin/Treasurers only) */}
+          {user && ["ADMIN", "CLUB_HEAD", "TREASURER"].includes(user.trueRole) && (
+            <select
+              value={activeViewRole}
+              onChange={(e) => switchViewRole(e.target.value)}
+              className="px-2 py-1 bg-white/50 dark:bg-black/50 border border-gray-300 dark:border-gray-600 rounded text-xs focus:outline-none dark:text-white"
+            >
+              <option value={user.trueRole}>View As: {user.trueRole}</option>
+              <option value="MEMBER">View As: MEMBER</option>
+            </select>
+          )}
+
           {/* Logout Button (Only when authenticated) */}
-          {isAuthenticated && (
+          {(isAuthenticated || isMember) && (
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition"
@@ -306,10 +337,10 @@ const Navbar = () => {
               </Link>
             ))}
 
-            {isAuthenticated && (
+            {isAuthenticated || isMember ? (
               <>
                 <Link
-                  to="/admin/events"
+                  to={isAuthenticated ? "/admin/events" : "/member/payments"}
                   onClick={() => setMenuOpen(false)}
                   className="
               mt-2 px-4 py-2
@@ -319,7 +350,7 @@ const Navbar = () => {
               transition
             "
                 >
-                  Admin
+                  Dashboard
                 </Link>
 
                 <button
@@ -335,6 +366,20 @@ const Navbar = () => {
                   Logout
                 </button>
               </>
+            ) : (
+                <Link
+                  to="/member-login"
+                  onClick={() => setMenuOpen(false)}
+                  className="
+              mt-2 px-4 py-2
+              bg-blue-600 text-white
+              rounded-lg text-center
+              hover:bg-blue-700
+              transition
+            "
+                >
+                  Login
+                </Link>
             )}
           </div>
         </div>

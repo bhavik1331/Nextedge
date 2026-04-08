@@ -8,6 +8,10 @@ import eventRoutes from "./events/event.routes.js";
 import adminRoutes from "./Admin/admin.routes.js";
 import contactRoutes from "./contacts/contact.routes.js";
 import memberRoutes from "./members/member.routes.js";
+import notificationRoutes from "./notifications/notification.routes.js";
+import paymentRoutes from "./payments/payment.routes.js";
+import documentRoutes from "./documents/document.routes.js";
+import auditRoutes from "./audit/audit.routes.js";
 
 const app = express();
 
@@ -46,11 +50,14 @@ app.use("/api/members/login", loginLimiter);
 
 app.use(express.json());
 
-// Routes
 app.use("/api/admin", adminRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/members", memberRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/documents", documentRoutes);
+app.use("/api/audit", auditRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

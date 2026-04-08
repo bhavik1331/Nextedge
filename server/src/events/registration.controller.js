@@ -1,6 +1,7 @@
 import Event from "./event.model.js";
 import Registration from "./registration.model.js";
 import Member from "../members/member.model.js";
+import Admin from "../Admin/admin.model.js";
 import { verifyAccessToken } from "../utils/jwt.js";
 
 /**
@@ -155,10 +156,22 @@ export const optionalMemberAuth = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     if (!token) return next();
     const decoded = verifyAccessToken(token);
-    if (decoded.role !== "member") return next();
-    const member = await Member.findById(decoded.id);
-    if (!member || !member.isActive) return next();
-    req.member = { id: member._id, email: member.email, role: member.role };
+    const validRoles = ["MEMBER", "ADMIN", "CLUB_HEAD", "TREASURER"];
+    if (!validRoles.includes(decoded.role?.toUpperCase())) return next();
+    
+    // Hybrid Check
+    let user = await Member.findById(decoded.id);
+    if (!user) {
+      user = await Admin.findById(decoded.id);
+    }
+
+    if (!user || !user.isActive) return next();
+    
+    req.member = { 
+      id: user._id, 
+      email: user.email || user.username, 
+      role: user.role?.toUpperCase() || 'MEMBER' 
+    };
     next();
   } catch (e) {
     next();

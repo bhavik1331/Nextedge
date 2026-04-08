@@ -3,6 +3,13 @@ import bcrypt from "bcryptjs";
 
 const memberSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      trim: true,
+      default: function() {
+        return this.email ? this.email.split('@')[0] : 'Unknown';
+      }
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -19,13 +26,31 @@ const memberSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "member",
-      enum: ["member"],
+      default: "MEMBER",
+      enum: ["ADMIN", "CLUB_HEAD", "TREASURER", "MEMBER"],
     },
     isActive: {
       type: Boolean,
       default: true,
     },
+    bio: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    description: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    skills: {
+      type: [String],
+      default: []
+    },
+    avatar: {
+      type: String,
+      default: ""
+    }
   },
   { timestamps: true }
 );

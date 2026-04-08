@@ -10,7 +10,7 @@ const MemberLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get("returnTo") || "/events";
+  const returnTo = searchParams.get("returnTo") || "/member/dashboard";
   const { memberLogin } = useAuth();
 
   const handleSubmit = async (e) => {

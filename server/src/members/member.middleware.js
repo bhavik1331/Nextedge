@@ -1,8 +1,9 @@
 import { verifyAccessToken } from "../utils/jwt.js";
 import Member from "./member.model.js";
+import Admin from "../Admin/admin.model.js";
 
 /**
- * Verify JWT and authenticate member (role === "member").
+ * Verify JWT and authenticate member or admin natively
  * Sets req.member = { id, email, role }.
  */
 export const authenticateMember = async (req, res, next) => {
@@ -24,17 +25,17 @@ export const authenticateMember = async (req, res, next) => {
     }
 
     const decoded = verifyAccessToken(token);
-    if (decoded.role !== "member") {
-      return res.status(403).json({
-        success: false,
-        message: "Member access required.",
-      });
-    }
 
-    const member = await Member.findById(decoded.id);
+    // Hybrid Check: If not found in Member database, check the legacy Admin database
+    let member = await Member.findById(decoded.id);
+    if (!member) {
+      member = await Admin.findById(decoded.id);
+    }
+    
     if (!member) {
       return res.status(404).json({ success: false, message: "Member not found." });
     }
+    
     if (!member.isActive) {
       return res.status(403).json({
         success: false,
@@ -44,8 +45,8 @@ export const authenticateMember = async (req, res, next) => {
 
     req.member = {
       id: member._id,
-      email: member.email,
-      role: member.role,
+      email: member.email || member.username,
+      role: member.role ? member.role.toUpperCase() : 'MEMBER',
     };
     next();
   } catch (error) {

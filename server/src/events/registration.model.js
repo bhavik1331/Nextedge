@@ -29,6 +29,11 @@ const registrationSchema = new mongoose.Schema(
       type: Date,
       default: () => new Date(),
     },
+    status: {
+      type: String,
+      enum: ["Registered", "Attended", "Absent"],
+      default: "Registered",
+    },
   },
   { timestamps: true }
 );
