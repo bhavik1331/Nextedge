@@ -21,7 +21,7 @@ const MemberDashboardLayout = () => {
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden mt-18">
       {/* Sidebar - Fixed on desktop, dismissible on mobile (optional enhancement) */}
       <DashboardSidebar />
 
