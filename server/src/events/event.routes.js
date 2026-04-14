@@ -18,33 +18,35 @@ import {
   getEventRegistrations,
   optionalMemberAuth,
 } from "./registration.controller.js";
-import { authenticateAdmin } from "../Admin/admin.middleware.js";
+import { authenticateMember } from "../members/member.middleware.js";
+import { authorizeRole } from "../middlewares/authorizeRole.js";
 
 const router = express.Router();
+const eventManagerGuard = [authenticateMember, authorizeRole("ADMIN", "CLUB_HEAD")];
 
-// Protected routes - Admin only
+// Protected routes - Admin and Club Head
 router.post(
   "/",
-  authenticateAdmin,
+  ...eventManagerGuard,
   upload.fields([{ name: "coverImage", maxCount: 1 }]),
   createEvent,
 );
 
 // update event details
-router.put("/:id", authenticateAdmin, updateEvent);
+router.put("/:id", ...eventManagerGuard, updateEvent);
 
 // add images
 router.patch(
   "/:id/media",
-  authenticateAdmin,
+  ...eventManagerGuard,
   upload.fields([{ name: "images", maxCount: 10 }]),
   addEventMedia,
 );
 // delete single media
-router.delete("/:id/media/:publicId", authenticateAdmin, deleteEventMedia);
+router.delete("/:id/media/:publicId", ...eventManagerGuard, deleteEventMedia);
 
 // delete event
-router.delete("/:id", authenticateAdmin, deleteEvent);
+router.delete("/:id", ...eventManagerGuard, deleteEvent);
 
 // Public routes
 router.get("/", getAllEvents);
@@ -55,7 +57,7 @@ router.get("/gallery", getAllEventImages);
 // Registration (must be before /:id so :eventId is not consumed by :id)
 router.post("/:eventId/register", optionalMemberAuth, registerForEvent);
 router.get("/:eventId/register/status", optionalMemberAuth, getRegistrationStatus);
-router.get("/:eventId/registrations", authenticateAdmin, getEventRegistrations);
+router.get("/:eventId/registrations", ...eventManagerGuard, getEventRegistrations);
 
 router.get("/:id", getEventById);
 

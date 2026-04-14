@@ -10,7 +10,7 @@ const MemberLogin = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const returnTo = searchParams.get("returnTo") || "/member/dashboard";
+  const returnTo = searchParams.get("returnTo");
   const { memberLogin } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -24,7 +24,13 @@ const MemberLogin = () => {
     try {
       const result = await memberLogin(email, password);
       if (result.success) {
-        navigate(returnTo);
+        const role = String(result.role || "MEMBER").toUpperCase();
+        const roleHome = role === "TREASURER"
+          ? "/treasurer/overview"
+          : role === "CLUB_HEAD"
+            ? "/club-head/fund-requests"
+            : "/member/dashboard";
+        navigate(returnTo || roleHome);
       } else {
         setError(result.message || "Login failed");
       }

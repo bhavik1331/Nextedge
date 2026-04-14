@@ -21,6 +21,17 @@ const Navbar = () => {
   const { isAuthenticated, isMember, logout, memberLogout } = useAuth();
   const { user } = useAuthStore();
 
+  const currentRole = user?.trueRole || user?.role || null;
+
+  const dashboardPath =
+    currentRole === "TREASURER"
+      ? "/treasurer/overview"
+      : currentRole === "CLUB_HEAD"
+        ? "/club-head/overview"
+        : currentRole === "ADMIN" || isAuthenticated
+          ? "/admin/events"
+          : "/member/dashboard";
+
   const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -184,7 +195,7 @@ const Navbar = () => {
           ))}
           {isAuthenticated || isMember ? (
             <Link
-              to={isAuthenticated ? "/admin/events" : "/member/dashboard"}
+              to={dashboardPath}
               className="
     ml-2 px-5 py-2 rounded-full
     bg-blue-600 text-white
@@ -330,7 +341,7 @@ const Navbar = () => {
             {isAuthenticated || isMember ? (
               <>
                 <Link
-                  to={isAuthenticated ? "/admin/events" : "/member/dashboard"}
+                  to={dashboardPath}
                   onClick={() => setMenuOpen(false)}
                   className="
               mt-2 px-4 py-2

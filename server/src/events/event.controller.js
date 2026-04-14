@@ -73,6 +73,7 @@ export const createEvent = async (req, res) => {
       location: req.body.location,
       youtubeVideoUrl: req.body.youtubeVideoUrl || undefined,
       images: [],
+      createdBy: req.member?.id || req.admin?.id,
     };
 
     if (coverImage) eventData.coverImage = coverImage;

@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         setAdmin(null);
         // Sync normal member role into Zustand
         storeSetAuth({ id: memberData._id, name: memberData.name || memberData.email, email: memberData.email, role: memberData.role });
-        return { success: true };
+        return { success: true, role: memberData.role };
       }
       return { success: false, message: response.data.message };
     } catch (error) {

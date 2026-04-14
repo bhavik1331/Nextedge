@@ -27,7 +27,7 @@ router.post("/avatar", authenticateMember, upload.fields([{ name: "avatar", maxC
 
 // Protected elevated endpoints
 router.get("/", authenticateMember, authorizeRole('ADMIN', 'CLUB_HEAD', 'TREASURER'), getAllMembers);
-router.post("/", authenticateMember, authorizeRole('ADMIN'), createMember);
+router.post("/", authenticateMember, authorizeRole('ADMIN', 'CLUB_HEAD'), createMember);
 router.put("/:id/role", authenticateMember, authorizeRole('ADMIN'), updateRole);
 
 export default router;

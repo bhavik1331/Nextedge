@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
+import path from "path";
 
 import eventRoutes from "./events/event.routes.js";
 import adminRoutes from "./Admin/admin.routes.js";
@@ -13,6 +13,7 @@ import paymentRoutes from "./payments/payment.routes.js";
 import documentRoutes from "./documents/document.routes.js";
 import auditRoutes from "./audit/audit.routes.js";
 import attendanceRoutes from "./attendance/attendance.routes.js";
+import financeRoutes from "./finance/finance.routes.js";
 
 const app = express();
 
@@ -33,23 +34,8 @@ app.use(
   })
 );
 
-// Global rate limiting for API routes
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100,
-});
-
-// Stricter limiter for login to mitigate brute-force
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  limit: 5,
-});
-
-app.use("/api", apiLimiter);
-app.use("/api/admin/login", loginLimiter);
-app.use("/api/members/login", loginLimiter);
-
 app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/events", eventRoutes);
@@ -60,6 +46,7 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/documents", documentRoutes);
 app.use("/api/audit", auditRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/finance", financeRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

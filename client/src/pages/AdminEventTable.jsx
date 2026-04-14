@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { api } from "../api/axios.js";
 
-const AdminEventTable = ({ events, onEdit, onDelete }) => {
+const AdminEventTable = ({ events, onEdit, onDelete, registrationsBasePath = "/admin/events" }) => {
   const deleteEvent = async (id) => {
     if (!confirm("Delete this event?")) return;
     await api.delete(`/events/${id}`);
@@ -31,7 +31,7 @@ const AdminEventTable = ({ events, onEdit, onDelete }) => {
               </td>
               <td className="p-4 flex flex-wrap gap-2 justify-end">
                 <Link
-                  to={`/admin/events/${event._id}/registrations`}
+                  to={`${registrationsBasePath}/${event._id}/registrations`}
                   className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded inline-block"
                 >
                   Registrations

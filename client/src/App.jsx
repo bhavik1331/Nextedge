@@ -4,6 +4,7 @@ import {
   createRoutesFromElements,
   Route,
   Outlet,
+  Navigate,
 } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -36,6 +37,24 @@ import MemberAttendance from "./pages/member/MemberAttendance";
 import MemberPayments from "./pages/member/MemberPayments";
 import MemberProfile from "./pages/member/MemberProfile";
 import MemberNotifications from "./pages/member/MemberNotifications";
+import TreasurerLayout from "./modules/finance/presentation/TreasurerLayout";
+import TreasurerOverviewPage from "./modules/finance/presentation/pages/TreasurerOverviewPage";
+import TreasurerMemberFeesPage from "./modules/finance/presentation/pages/TreasurerMemberFeesPage";
+import TreasurerApprovalsPage from "./modules/finance/presentation/pages/TreasurerApprovalsPage";
+import TreasurerPaymentHistoryPage from "./modules/finance/presentation/pages/TreasurerPaymentHistoryPage";
+import TreasurerLedgerPage from "./modules/finance/presentation/pages/TreasurerLedgerPage";
+import TreasurerFundRequestsPage from "./modules/finance/presentation/pages/TreasurerFundRequestsPage";
+import TreasurerExpensesPage from "./modules/finance/presentation/pages/TreasurerExpensesPage";
+import TreasurerReportsPage from "./modules/finance/presentation/pages/TreasurerReportsPage";
+import TreasurerNotificationsPage from "./modules/finance/presentation/pages/TreasurerNotificationsPage";
+import MemberFinancePage from "./modules/finance/presentation/pages/MemberFinancePage";
+import ClubHeadFundsPage from "./modules/finance/presentation/pages/ClubHeadFundsPage";
+import ClubHeadLayout from "./modules/clubhead/presentation/ClubHeadLayout";
+import ClubHeadOverviewPage from "./modules/clubhead/presentation/pages/ClubHeadOverviewPage";
+import ClubHeadEventListPage from "./modules/clubhead/presentation/pages/ClubHeadEventListPage";
+import ClubHeadEventsPage from "./modules/clubhead/presentation/pages/ClubHeadEventsPage";
+import ClubHeadEventRegistrationsPage from "./modules/clubhead/presentation/pages/ClubHeadEventRegistrationsPage";
+import ClubHeadMembersPage from "./modules/clubhead/presentation/pages/ClubHeadMembersPage";
 
 const Layout = () => {
   return (
@@ -83,7 +102,7 @@ const router = createBrowserRouter(
       <Route path="/member-login" element={<MemberLogin />} />
 
       {/* CORE ADMIN ROUTES */}
-      <Route element={<RoleGuard requiredRole={['ADMIN', 'CLUB_HEAD']} />}>
+      <Route element={<RoleGuard requiredRole="ADMIN" deniedRedirectByRole={{ TREASURER: '/treasurer/overview', CLUB_HEAD: '/club-head/overview' }} />}>
         <Route path="/admin/events" element={<AdminEventListPage />} />
         <Route path="/admin/event-form" element={<AdminEventsPage />} />
         <Route path="/admin/events/:eventId/registrations" element={<AdminEventRegistrationsPage />} />
@@ -92,13 +111,40 @@ const router = createBrowserRouter(
         <Route path="/admin/attendance" element={<AdminAttendancePage />} />
       </Route>
 
-      {/* SUPER ADMIN OR TREASURER ROUTES */}
-      <Route element={<RoleGuard requiredRole={['ADMIN', 'TREASURER']} />}>
+      {/* ADMIN ONLY ROUTES */}
+      <Route element={<RoleGuard requiredRole="ADMIN" deniedRedirectByRole={{ TREASURER: '/treasurer/overview', CLUB_HEAD: '/club-head/overview' }} />}>
         <Route path="/admin/payments" element={<AdminPaymentsPage />} />
         <Route path="/admin/documents" element={<AdminDocumentsPage />} />
       </Route>
 
-      <Route element={<RoleGuard requiredRole="ADMIN" />}>
+      {/* TREASURER DASHBOARD ROUTES */}
+      <Route element={<RoleGuard requiredRole={['ADMIN', 'TREASURER']} />}>
+        <Route path="/treasurer" element={<TreasurerLayout />}>
+          <Route path="overview" element={<TreasurerOverviewPage />} />
+          <Route path="member-fees" element={<TreasurerMemberFeesPage />} />
+          <Route path="fee-approvals" element={<TreasurerApprovalsPage />} />
+          <Route path="payment-history" element={<TreasurerPaymentHistoryPage />} />
+          <Route path="ledger" element={<TreasurerLedgerPage />} />
+          <Route path="fund-requests" element={<TreasurerFundRequestsPage />} />
+          <Route path="expenses" element={<TreasurerExpensesPage />} />
+          <Route path="reports" element={<TreasurerReportsPage />} />
+          <Route path="notifications" element={<TreasurerNotificationsPage />} />
+        </Route>
+      </Route>
+
+      <Route element={<RoleGuard requiredRole="CLUB_HEAD" deniedRedirectByRole={{ ADMIN: '/admin/events', TREASURER: '/treasurer/overview' }} />}>
+        <Route path="/club-head" element={<ClubHeadLayout />}>
+          <Route index element={<Navigate to="overview" replace />} />
+          <Route path="overview" element={<ClubHeadOverviewPage />} />
+          <Route path="events" element={<ClubHeadEventListPage />} />
+          <Route path="event-form" element={<ClubHeadEventsPage />} />
+          <Route path="events/:eventId/registrations" element={<ClubHeadEventRegistrationsPage />} />
+          <Route path="members" element={<ClubHeadMembersPage />} />
+          <Route path="fund-requests" element={<ClubHeadFundsPage />} />
+        </Route>
+      </Route>
+
+      <Route element={<RoleGuard requiredRole="ADMIN" deniedRedirectByRole={{ TREASURER: '/treasurer/overview', CLUB_HEAD: '/club-head/overview' }} />}>
         <Route path="/admin/contacts" element={<AdminContactPage />} />
       </Route>
 
@@ -109,6 +155,7 @@ const router = createBrowserRouter(
           <Route path="/member/events" element={<MemberEvents />} />
           <Route path="/member/attendance" element={<MemberAttendance />} />
           <Route path="/member/payments" element={<MemberPayments />} />
+          <Route path="/member/finance" element={<MemberFinancePage />} />
           <Route path="/member/profile" element={<MemberProfile />} />
           <Route path="/member/notifications" element={<MemberNotifications />} />
         </Route>

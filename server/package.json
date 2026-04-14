@@ -8,6 +8,8 @@
     "start": "nodemon server.js",
     "seed:admin": "node seedAdmin.js",
     "create:admin": "node createAdmin.js",
+    "create:treasurer": "node createTreasurer.js",
+    "create:clubhead": "node createClubHead.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
