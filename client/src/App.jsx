@@ -66,7 +66,7 @@ const Layout = () => {
 
 const LayoutContent = () => {
   const { loading } = useAuth();
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -93,7 +93,7 @@ const router = createBrowserRouter(
       <Route path="/contact" element={<Contact />} />
       <Route path="/events" element={<Events />} />
       <Route path="/events/:eventId" element={<EventDetail />} />
-      
+
       {/* Utility Routes */}
       <Route path="/unauthorized" element={<Unauthorized />} />
 
@@ -102,49 +102,104 @@ const router = createBrowserRouter(
       <Route path="/member-login" element={<MemberLogin />} />
 
       {/* CORE ADMIN ROUTES */}
-      <Route element={<RoleGuard requiredRole="ADMIN" deniedRedirectByRole={{ TREASURER: '/treasurer/overview', CLUB_HEAD: '/club-head/overview' }} />}>
+      <Route
+        element={
+          <RoleGuard
+            requiredRole="ADMIN"
+            deniedRedirectByRole={{
+              TREASURER: "/treasurer/overview",
+              CLUB_HEAD: "/club-head/overview",
+            }}
+          />
+        }
+      >
         <Route path="/admin/events" element={<AdminEventListPage />} />
         <Route path="/admin/event-form" element={<AdminEventsPage />} />
-        <Route path="/admin/events/:eventId/registrations" element={<AdminEventRegistrationsPage />} />
+        <Route
+          path="/admin/events/:eventId/registrations"
+          element={<AdminEventRegistrationsPage />}
+        />
         <Route path="/admin/members" element={<AdminMembersPage />} />
-        <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+        <Route
+          path="/admin/notifications"
+          element={<AdminNotificationsPage />}
+        />
         <Route path="/admin/attendance" element={<AdminAttendancePage />} />
       </Route>
 
       {/* ADMIN ONLY ROUTES */}
-      <Route element={<RoleGuard requiredRole="ADMIN" deniedRedirectByRole={{ TREASURER: '/treasurer/overview', CLUB_HEAD: '/club-head/overview' }} />}>
+      <Route
+        element={
+          <RoleGuard
+            requiredRole="ADMIN"
+            deniedRedirectByRole={{
+              TREASURER: "/treasurer/overview",
+              CLUB_HEAD: "/club-head/overview",
+            }}
+          />
+        }
+      >
         <Route path="/admin/payments" element={<AdminPaymentsPage />} />
         <Route path="/admin/documents" element={<AdminDocumentsPage />} />
       </Route>
 
       {/* TREASURER DASHBOARD ROUTES */}
-      <Route element={<RoleGuard requiredRole={['ADMIN', 'TREASURER']} />}>
+      <Route element={<RoleGuard requiredRole={["ADMIN", "TREASURER"]} />}>
         <Route path="/treasurer" element={<TreasurerLayout />}>
           <Route path="overview" element={<TreasurerOverviewPage />} />
           <Route path="member-fees" element={<TreasurerMemberFeesPage />} />
           <Route path="fee-approvals" element={<TreasurerApprovalsPage />} />
-          <Route path="payment-history" element={<TreasurerPaymentHistoryPage />} />
+          <Route
+            path="payment-history"
+            element={<TreasurerPaymentHistoryPage />}
+          />
           <Route path="ledger" element={<TreasurerLedgerPage />} />
           <Route path="fund-requests" element={<TreasurerFundRequestsPage />} />
           <Route path="expenses" element={<TreasurerExpensesPage />} />
           <Route path="reports" element={<TreasurerReportsPage />} />
-          <Route path="notifications" element={<TreasurerNotificationsPage />} />
+          <Route
+            path="notifications"
+            element={<TreasurerNotificationsPage />}
+          />
         </Route>
       </Route>
 
-      <Route element={<RoleGuard requiredRole="CLUB_HEAD" deniedRedirectByRole={{ ADMIN: '/admin/events', TREASURER: '/treasurer/overview' }} />}>
+      <Route
+        element={
+          <RoleGuard
+            requiredRole="CLUB_HEAD"
+            deniedRedirectByRole={{
+              ADMIN: "/admin/events",
+              TREASURER: "/treasurer/overview",
+            }}
+          />
+        }
+      >
         <Route path="/club-head" element={<ClubHeadLayout />}>
           <Route index element={<Navigate to="overview" replace />} />
           <Route path="overview" element={<ClubHeadOverviewPage />} />
           <Route path="events" element={<ClubHeadEventListPage />} />
           <Route path="event-form" element={<ClubHeadEventsPage />} />
-          <Route path="events/:eventId/registrations" element={<ClubHeadEventRegistrationsPage />} />
+          <Route
+            path="events/:eventId/registrations"
+            element={<ClubHeadEventRegistrationsPage />}
+          />
           <Route path="members" element={<ClubHeadMembersPage />} />
           <Route path="fund-requests" element={<ClubHeadFundsPage />} />
         </Route>
       </Route>
 
-      <Route element={<RoleGuard requiredRole="ADMIN" deniedRedirectByRole={{ TREASURER: '/treasurer/overview', CLUB_HEAD: '/club-head/overview' }} />}>
+      <Route
+        element={
+          <RoleGuard
+            requiredRole="ADMIN"
+            deniedRedirectByRole={{
+              TREASURER: "/treasurer/overview",
+              CLUB_HEAD: "/club-head/overview",
+            }}
+          />
+        }
+      >
         <Route path="/admin/contacts" element={<AdminContactPage />} />
       </Route>
 
@@ -157,7 +212,10 @@ const router = createBrowserRouter(
           <Route path="/member/payments" element={<MemberPayments />} />
           <Route path="/member/finance" element={<MemberFinancePage />} />
           <Route path="/member/profile" element={<MemberProfile />} />
-          <Route path="/member/notifications" element={<MemberNotifications />} />
+          <Route
+            path="/member/notifications"
+            element={<MemberNotifications />}
+          />
         </Route>
       </Route>
 

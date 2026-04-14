@@ -24,7 +24,10 @@ const TreasurerMemberFeesPage = () => {
     load();
   }, [load]);
 
-  const pages = useMemo(() => Math.max(Math.ceil(rows.length / limit), 1), [rows.length, limit]);
+  const pages = useMemo(
+    () => Math.max(Math.ceil(rows.length / limit), 1),
+    [rows.length, limit],
+  );
   const currentPage = Math.min(page, pages);
   const pagedRows = useMemo(() => {
     const start = (currentPage - 1) * limit;
@@ -59,23 +62,50 @@ const TreasurerMemberFeesPage = () => {
     <section className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Member Fee Management</h1>
-        <button className="rounded border border-slate-300 px-3 py-2 text-sm" onClick={exportCsv}>Export CSV</button>
+        <button
+          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          onClick={exportCsv}
+        >
+          Export CSV
+        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" value={filters.status} onChange={(e) => setFilters((s) => ({ ...s, status: e.target.value }))}>
+        <select
+          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          value={filters.status}
+          onChange={(e) =>
+            setFilters((s) => ({ ...s, status: e.target.value }))
+          }
+        >
           <option value="">All Status</option>
           <option value="Paid">Paid</option>
           <option value="Pending">Pending</option>
           <option value="Partial">Partial</option>
         </select>
-        <select className="rounded border border-slate-300 px-3 py-2 text-sm" value={filters.mode} onChange={(e) => setFilters((s) => ({ ...s, mode: e.target.value }))}>
+        <select
+          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          value={filters.mode}
+          onChange={(e) => setFilters((s) => ({ ...s, mode: e.target.value }))}
+        >
           <option value="">All Modes</option>
           <option value="ONLINE">Online</option>
           <option value="CASH">Cash</option>
         </select>
-        <input className="rounded border border-slate-300 px-3 py-2 text-sm" placeholder="Search by name or membership ID" value={filters.search} onChange={(e) => setFilters((s) => ({ ...s, search: e.target.value }))} />
-        <button className="rounded bg-slate-900 px-3 py-2 text-sm text-white" onClick={load}>Apply Filters</button>
+        <input
+          className="rounded border border-slate-300 px-3 py-2 text-sm"
+          placeholder="Search by name or membership ID"
+          value={filters.search}
+          onChange={(e) =>
+            setFilters((s) => ({ ...s, search: e.target.value }))
+          }
+        />
+        <button
+          className="rounded bg-slate-900 px-3 py-2 text-sm text-white"
+          onClick={load}
+        >
+          Apply Filters
+        </button>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-slate-200">
@@ -96,11 +126,23 @@ const TreasurerMemberFeesPage = () => {
                 <td className="px-3 py-2">{row.memberName}</td>
                 <td className="px-3 py-2">{row.membershipId}</td>
                 <td className="px-3 py-2">{toCurrency(row.feeAmount)}</td>
-                <td className="px-3 py-2"><StatusBadge status={row.paymentStatus} /></td>
+                <td className="px-3 py-2">
+                  <StatusBadge status={row.paymentStatus} />
+                </td>
                 <td className="px-3 py-2">{row.paymentMode || "-"}</td>
                 <td className="px-3 py-2 space-x-2">
-                  <button className="rounded bg-slate-900 px-2 py-1 text-xs text-white" onClick={() => markPaid(row.memberId)}>Mark Paid</button>
-                  <button className="rounded border border-slate-300 px-2 py-1 text-xs" onClick={() => remind(row.memberId)}>Remind</button>
+                  <button
+                    className="rounded bg-slate-900 px-2 py-1 text-xs text-white"
+                    onClick={() => markPaid(row.memberId)}
+                  >
+                    Mark Paid
+                  </button>
+                  <button
+                    className="rounded border border-slate-300 px-2 py-1 text-xs"
+                    onClick={() => remind(row.memberId)}
+                  >
+                    Remind
+                  </button>
                 </td>
               </tr>
             ))}

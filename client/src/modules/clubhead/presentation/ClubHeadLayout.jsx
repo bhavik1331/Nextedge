@@ -14,7 +14,9 @@ const ClubHeadLayout = () => {
     <div className="min-h-screen bg-slate-50 text-slate-900 pt-20">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[240px_1fr]">
         <aside className="rounded-xl border border-slate-200 bg-white p-3 h-fit sticky top-24">
-          <p className="px-2 pb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Club Head Panel</p>
+          <p className="px-2 pb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Club Head Panel
+          </p>
           <nav className="space-y-1">
             {links.map((link) => (
               <NavLink

@@ -7,12 +7,19 @@ const TreasurerExpensesPage = () => {
   const [expenses, setExpenses] = useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
-  const [pagination, setPagination] = useState({ page: 1, limit: 25, total: 0, pages: 1 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 25,
+    total: 0,
+    pages: 1,
+  });
 
   const load = useCallback(async () => {
     const response = await treasurerUseCases.loadExpenses({ page, limit });
     setExpenses(response.expenses || []);
-    setPagination(response.pagination || { page: 1, limit, total: 0, pages: 1 });
+    setPagination(
+      response.pagination || { page: 1, limit, total: 0, pages: 1 },
+    );
   }, [page, limit]);
 
   useEffect(() => {
@@ -24,7 +31,10 @@ const TreasurerExpensesPage = () => {
     if (!title) return;
     const amount = window.prompt("Amount", "0");
     if (!amount) return;
-    const category = window.prompt("Category: EVENT, OPERATIONS, EQUIPMENT, MISC", "EVENT");
+    const category = window.prompt(
+      "Category: EVENT, OPERATIONS, EQUIPMENT, MISC",
+      "EVENT",
+    );
     if (!category) return;
 
     const payload = new FormData();
@@ -49,7 +59,12 @@ const TreasurerExpensesPage = () => {
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Expense Tracking</h1>
-        <button onClick={addExpense} className="rounded bg-slate-900 px-3 py-2 text-sm text-white">Add Expense</button>
+        <button
+          onClick={addExpense}
+          className="rounded bg-slate-900 px-3 py-2 text-sm text-white"
+        >
+          Add Expense
+        </button>
       </div>
       <div className="overflow-x-auto rounded-lg border border-slate-200">
         <table className="w-full text-left text-sm">
@@ -67,9 +82,20 @@ const TreasurerExpensesPage = () => {
               <tr key={e._id} className="border-t border-slate-100">
                 <td className="px-3 py-2">{e.title}</td>
                 <td className="px-3 py-2">{e.category}</td>
-                <td className="px-3 py-2">{new Date(e.date).toLocaleDateString()}</td>
+                <td className="px-3 py-2">
+                  {new Date(e.date).toLocaleDateString()}
+                </td>
                 <td className="px-3 py-2">{toCurrency(e.amount)}</td>
-                <td className="px-3 py-2">{!e.isReversed && <button className="rounded border border-slate-300 px-2 py-1 text-xs" onClick={() => reverse(e._id)}>Reverse</button>}</td>
+                <td className="px-3 py-2">
+                  {!e.isReversed && (
+                    <button
+                      className="rounded border border-slate-300 px-2 py-1 text-xs"
+                      onClick={() => reverse(e._id)}
+                    >
+                      Reverse
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

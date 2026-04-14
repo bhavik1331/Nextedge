@@ -62,7 +62,7 @@ const ledgerEntrySchema = new mongoose.Schema(
       trim: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const LedgerEntry = mongoose.model("LedgerEntry", ledgerEntrySchema);

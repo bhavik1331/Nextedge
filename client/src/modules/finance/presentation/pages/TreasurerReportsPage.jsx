@@ -1,5 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { treasurerUseCases } from "../../application/treasurer.usecases";
 
 const TreasurerReportsPage = () => {
@@ -39,11 +52,28 @@ const TreasurerReportsPage = () => {
 
       <div className="rounded-lg border border-slate-200 p-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-          <input className="rounded border border-slate-300 px-3 py-2 text-sm" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-          <input className="rounded border border-slate-300 px-3 py-2 text-sm" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-          <button className="rounded bg-slate-900 px-3 py-2 text-sm text-white" onClick={loadSummary}>Load Date Range Summary</button>
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+          />
+          <input
+            className="rounded border border-slate-300 px-3 py-2 text-sm"
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+          />
+          <button
+            className="rounded bg-slate-900 px-3 py-2 text-sm text-white"
+            onClick={loadSummary}
+          >
+            Load Date Range Summary
+          </button>
           <div className="rounded bg-slate-50 px-3 py-2 text-sm">
-            {summary ? `Credit: ${summary.totalCredit} | Debit: ${summary.totalDebit} | Net: ${summary.net}` : "Select dates to view summary"}
+            {summary
+              ? `Credit: ${summary.totalCredit} | Debit: ${summary.totalDebit} | Net: ${summary.net}`
+              : "Select dates to view summary"}
           </div>
         </div>
       </div>
@@ -69,7 +99,14 @@ const TreasurerReportsPage = () => {
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={data.expenseBreakdown} dataKey="total" nameKey="category" outerRadius={90} fill="#334155" label />
+                <Pie
+                  data={data.expenseBreakdown}
+                  dataKey="total"
+                  nameKey="category"
+                  outerRadius={90}
+                  fill="#334155"
+                  label
+                />
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
@@ -85,7 +122,12 @@ const TreasurerReportsPage = () => {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="balance" stroke="#15803d" strokeWidth={2} />
+                <Line
+                  type="monotone"
+                  dataKey="balance"
+                  stroke="#15803d"
+                  strokeWidth={2}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>

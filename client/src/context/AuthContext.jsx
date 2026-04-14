@@ -42,7 +42,12 @@ export const AuthProvider = ({ children }) => {
         setMember(null);
         setMemberAccessToken(null);
         // Hybrid: Force admin role into Zustand
-        storeSetAuth({ id: adminData._id, name: adminData.username, email: adminData.username, role: 'ADMIN' });
+        storeSetAuth({
+          id: adminData._id,
+          name: adminData.username,
+          email: adminData.username,
+          role: "ADMIN",
+        });
         return { success: true };
       }
       return { success: false, message: response.data.message };
@@ -68,7 +73,12 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(null);
         setAdmin(null);
         // Sync normal member role into Zustand
-        storeSetAuth({ id: memberData._id, name: memberData.name || memberData.email, email: memberData.email, role: memberData.role });
+        storeSetAuth({
+          id: memberData._id,
+          name: memberData.name || memberData.email,
+          email: memberData.email,
+          role: memberData.role,
+        });
         return { success: true, role: memberData.role };
       }
       return { success: false, message: response.data.message };
@@ -114,7 +124,12 @@ export const AuthProvider = ({ children }) => {
         setAdmin(adminData);
         setMember(null);
         setMemberAccessToken(null);
-        storeSetAuth({ id: adminData._id, name: adminData.username, email: adminData.username, role: 'ADMIN' });
+        storeSetAuth({
+          id: adminData._id,
+          name: adminData.username,
+          email: adminData.username,
+          role: "ADMIN",
+        });
         return true;
       }
     } catch (e) {
@@ -127,7 +142,12 @@ export const AuthProvider = ({ children }) => {
         const { accessToken: newToken, member: memberData } = memberRes.data;
         setMemberAccessToken(newToken);
         setMember(memberData);
-        storeSetAuth({ id: memberData._id, name: memberData.name || memberData.email, email: memberData.email, role: memberData.role });
+        storeSetAuth({
+          id: memberData._id,
+          name: memberData.name || memberData.email,
+          email: memberData.email,
+          role: memberData.role,
+        });
         return true;
       }
     } catch (e) {

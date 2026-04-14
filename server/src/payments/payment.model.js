@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
   {
     memberId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Member',
+      ref: "Member",
       required: true,
     },
     amount: {
@@ -31,8 +31,8 @@ const paymentSchema = new mongoose.Schema(
     },
     paymentType: {
       type: String,
-      enum: ['manual', 'online'],
-      default: 'manual',
+      enum: ["manual", "online"],
+      default: "manual",
     },
     proofUrl: {
       type: String, // from ImageKit usually
@@ -46,18 +46,18 @@ const paymentSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
-        'SUBMITTED',
-        'PENDING_REVIEW',
-        'APPROVED',
-        'REJECTED',
-        'CLARIFICATION_NEEDED',
-        'Pending',
-        'Approved',
-        'Rejected',
-        'Pending Review',
-        'Clarification Needed',
+        "SUBMITTED",
+        "PENDING_REVIEW",
+        "APPROVED",
+        "REJECTED",
+        "CLARIFICATION_NEEDED",
+        "Pending",
+        "Approved",
+        "Rejected",
+        "Pending Review",
+        "Clarification Needed",
       ],
-      default: 'PENDING_REVIEW',
+      default: "PENDING_REVIEW",
     },
     rejectionReason: {
       type: String,
@@ -127,11 +127,11 @@ const paymentSchema = new mongoose.Schema(
     ],
     notes: {
       type: String,
-    }
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const Payment = mongoose.model('Payment', paymentSchema);
+const Payment = mongoose.model("Payment", paymentSchema);
 
 export default Payment;

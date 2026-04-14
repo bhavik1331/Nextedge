@@ -33,7 +33,13 @@ const fundRequestSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["SUBMITTED", "PENDING_APPROVAL", "APPROVED", "REJECTED", "RELEASED"],
+      enum: [
+        "SUBMITTED",
+        "PENDING_APPROVAL",
+        "APPROVED",
+        "REJECTED",
+        "RELEASED",
+      ],
       default: "PENDING_APPROVAL",
     },
     treasurerNotes: {
@@ -77,7 +83,7 @@ const fundRequestSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const FundRequest = mongoose.model("FundRequest", fundRequestSchema);

@@ -13,7 +13,8 @@ const parseArgs = () => {
     if (!arg.startsWith("--")) continue;
 
     const key = arg.slice(2);
-    const value = args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true;
+    const value =
+      args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true;
     parsed[key] = value;
     if (value !== true) i += 1;
   }
@@ -23,9 +24,13 @@ const parseArgs = () => {
 
 const usage = () => {
   console.log("Usage:");
-  console.log("  node createClubHead.js --name \"Club Head Name\" --email clubhead@example.com --password \"StrongPass123\"");
+  console.log(
+    '  node createClubHead.js --name "Club Head Name" --email clubhead@example.com --password "StrongPass123"',
+  );
   console.log("Optional:");
-  console.log("  --force   Update existing member with same email to CLUB_HEAD and reset name/password");
+  console.log(
+    "  --force   Update existing member with same email to CLUB_HEAD and reset name/password",
+  );
 };
 
 const main = async () => {
@@ -53,10 +58,14 @@ const main = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
 
-    const existing = await Member.findOne({ email: normalizedEmail }).select("+password");
+    const existing = await Member.findOne({ email: normalizedEmail }).select(
+      "+password",
+    );
 
     if (existing && !force) {
-      console.error("A member with this email already exists. Use --force to update it as CLUB_HEAD.");
+      console.error(
+        "A member with this email already exists. Use --force to update it as CLUB_HEAD.",
+      );
       process.exit(1);
     }
 

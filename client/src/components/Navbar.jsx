@@ -243,8 +243,6 @@ const Navbar = () => {
             )}
           </button>
 
-
-
           {/* Logout Button (Only when authenticated) */}
           {(isAuthenticated || isMember) && (
             <button
@@ -368,19 +366,19 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-                <Link
-                  to="/member-login"
-                  onClick={() => setMenuOpen(false)}
-                  className="
+              <Link
+                to="/member-login"
+                onClick={() => setMenuOpen(false)}
+                className="
               mt-2 px-4 py-2
               bg-blue-600 text-white
               rounded-lg text-center
               hover:bg-blue-700
               transition
             "
-                >
-                  Login
-                </Link>
+              >
+                Login
+              </Link>
             )}
           </div>
         </div>

@@ -32,7 +32,7 @@ export const getNextReceiptNumber = async () => {
   const counter = await ReceiptCounter.findOneAndUpdate(
     { period },
     { $inc: { value: 1 } },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   );
 
   const serial = String(counter.value).padStart(3, "0");
@@ -125,8 +125,17 @@ export const generateReceiptPdf = async ({
   receiptNumber,
   approvedByName,
 }) => {
-  const html = buildReceiptHtml({ payment, memberName, memberEmail, receiptNumber, approvedByName });
-  const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+  const html = buildReceiptHtml({
+    payment,
+    memberName,
+    memberEmail,
+    receiptNumber,
+    approvedByName,
+  });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
@@ -146,7 +155,8 @@ export const generateReceiptPdf = async ({
 };
 
 export const toCsv = (headers, rows) => {
-  const escapeCell = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+  const escapeCell = (value) =>
+    `"${String(value ?? "").replaceAll('"', '""')}"`;
   const headerLine = headers.map(escapeCell).join(",");
   const rowLines = rows.map((row) => row.map(escapeCell).join(","));
   return [headerLine, ...rowLines].join("\n");
@@ -162,7 +172,9 @@ export const sendCsvFile = (res, fileName, headers, rows) => {
 const buildTableHtml = ({ title, columns, rows }) => {
   const head = columns.map((c) => `<th>${c}</th>`).join("");
   const body = rows
-    .map((r) => `<tr>${r.map((v) => `<td>${String(v ?? "")}</td>`).join("")}</tr>`)
+    .map(
+      (r) => `<tr>${r.map((v) => `<td>${String(v ?? "")}</td>`).join("")}</tr>`,
+    )
     .join("");
 
   return `
@@ -191,7 +203,10 @@ const buildTableHtml = ({ title, columns, rows }) => {
 
 export const sendPdfTable = async (res, fileName, title, columns, rows) => {
   const html = buildTableHtml({ title, columns, rows });
-  const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox", "--disable-setuid-sandbox"] });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });

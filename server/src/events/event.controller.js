@@ -14,8 +14,10 @@ function normalizeEvent(event) {
     doc.eventStartDate = new Date(start);
     doc.date = doc.date || doc.eventStartDate;
   }
-  if (doc.registrationStartDate) doc.registrationStartDate = new Date(doc.registrationStartDate);
-  if (doc.registrationEndDate) doc.registrationEndDate = new Date(doc.registrationEndDate);
+  if (doc.registrationStartDate)
+    doc.registrationStartDate = new Date(doc.registrationStartDate);
+  if (doc.registrationEndDate)
+    doc.registrationEndDate = new Date(doc.registrationEndDate);
   doc.accessType = doc.accessType || "public";
   return doc;
 }
@@ -51,7 +53,8 @@ export const createEvent = async (req, res) => {
     }
 
     const eventStartDate = req.body.eventStartDate || req.body.date;
-    const registrationStartDate = req.body.registrationStartDate || eventStartDate;
+    const registrationStartDate =
+      req.body.registrationStartDate || eventStartDate;
     const registrationEndDate = req.body.registrationEndDate || eventStartDate;
     const accessType = req.body.accessType === "members" ? "members" : "public";
 
@@ -82,7 +85,7 @@ export const createEvent = async (req, res) => {
 
     // Send email notification to all members about the new event
     try {
-      const members = await Member.find().select('email');
+      const members = await Member.find().select("email");
       if (members && members.length > 0) {
         const htmlContent = `
           <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; max-width: 600px; margin: 0 auto;">
@@ -104,14 +107,18 @@ export const createEvent = async (req, res) => {
             </div>
           </div>
         `;
-        
-        const emailPromises = members.map(member => {
+
+        const emailPromises = members.map((member) => {
           if (member.email) {
             return sendEmail({
               to: member.email,
               subject: `New Event: ${eventData.title}`,
               html: htmlContent,
-            }).catch(e => console.error(`Failed sending new event email to ${member.email}`));
+            }).catch((e) =>
+              console.error(
+                `Failed sending new event email to ${member.email}`,
+              ),
+            );
           }
         });
         await Promise.all(emailPromises);
@@ -129,7 +136,11 @@ export const createEvent = async (req, res) => {
 
 // GET ALL EVENTS
 export const getAllEvents = async (req, res) => {
-  const events = await Event.find().sort({ date: 1, eventStartDate: 1, createdAt: 1 });
+  const events = await Event.find().sort({
+    date: 1,
+    eventStartDate: 1,
+    createdAt: 1,
+  });
   res.json({ success: true, events: events.map(normalizeEvent) });
 };
 
@@ -215,11 +226,17 @@ export const updateEvent = async (req, res) => {
       update.date = req.body.date;
       update.eventStartDate = req.body.date;
     }
-    if (req.body.registrationStartDate != null) update.registrationStartDate = req.body.registrationStartDate;
-    if (req.body.registrationEndDate != null) update.registrationEndDate = req.body.registrationEndDate;
-    if (req.body.accessType != null) update.accessType = req.body.accessType === "members" ? "members" : "public";
+    if (req.body.registrationStartDate != null)
+      update.registrationStartDate = req.body.registrationStartDate;
+    if (req.body.registrationEndDate != null)
+      update.registrationEndDate = req.body.registrationEndDate;
+    if (req.body.accessType != null)
+      update.accessType =
+        req.body.accessType === "members" ? "members" : "public";
 
-    const event = await Event.findByIdAndUpdate(req.params.id, update, { new: true });
+    const event = await Event.findByIdAndUpdate(req.params.id, update, {
+      new: true,
+    });
 
     if (!event) {
       return res.status(404).json({ message: "Event not found" });

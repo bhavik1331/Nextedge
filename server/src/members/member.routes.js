@@ -9,7 +9,7 @@ import {
   updateRole,
   getDashboardStats,
   updateProfile,
-  uploadAvatar
+  uploadAvatar,
 } from "./member.controller.js";
 import upload from "../events/upload.js";
 import { authenticateMember } from "./member.middleware.js";
@@ -23,11 +23,26 @@ router.post("/logout", logout);
 router.get("/verify", authenticateMember, verifyMember);
 router.get("/dashboard-stats", authenticateMember, getDashboardStats);
 router.put("/profile", authenticateMember, updateProfile);
-router.post("/avatar", authenticateMember, upload.fields([{ name: "avatar", maxCount: 1 }]), uploadAvatar);
+router.post(
+  "/avatar",
+  authenticateMember,
+  upload.fields([{ name: "avatar", maxCount: 1 }]),
+  uploadAvatar,
+);
 
 // Protected elevated endpoints
-router.get("/", authenticateMember, authorizeRole('ADMIN', 'CLUB_HEAD', 'TREASURER'), getAllMembers);
-router.post("/", authenticateMember, authorizeRole('ADMIN', 'CLUB_HEAD'), createMember);
-router.put("/:id/role", authenticateMember, authorizeRole('ADMIN'), updateRole);
+router.get(
+  "/",
+  authenticateMember,
+  authorizeRole("ADMIN", "CLUB_HEAD", "TREASURER"),
+  getAllMembers,
+);
+router.post(
+  "/",
+  authenticateMember,
+  authorizeRole("ADMIN", "CLUB_HEAD"),
+  createMember,
+);
+router.put("/:id/role", authenticateMember, authorizeRole("ADMIN"), updateRole);
 
 export default router;

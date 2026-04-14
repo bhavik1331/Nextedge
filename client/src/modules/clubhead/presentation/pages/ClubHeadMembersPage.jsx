@@ -48,12 +48,38 @@ const ClubHeadMembersPage = () => {
     <section className="space-y-4">
       <h1 className="text-2xl font-bold">Members</h1>
 
-      <form className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-3" onSubmit={createMember}>
-        <input className="rounded border border-slate-300 px-3 py-2" placeholder="Member name" value={name} onChange={(e) => setName(e.target.value)} required />
-        <input className="rounded border border-slate-300 px-3 py-2" placeholder="Member email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input className="rounded border border-slate-300 px-3 py-2" type="password" placeholder="Temporary password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button className="rounded bg-slate-900 px-3 py-2 text-sm font-semibold text-white md:col-span-3">Add Member</button>
-        {message && <p className="text-sm text-slate-600 md:col-span-3">{message}</p>}
+      <form
+        className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-3"
+        onSubmit={createMember}
+      >
+        <input
+          className="rounded border border-slate-300 px-3 py-2"
+          placeholder="Member name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          className="rounded border border-slate-300 px-3 py-2"
+          placeholder="Member email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          className="rounded border border-slate-300 px-3 py-2"
+          type="password"
+          placeholder="Temporary password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button className="rounded bg-slate-900 px-3 py-2 text-sm font-semibold text-white md:col-span-3">
+          Add Member
+        </button>
+        {message && (
+          <p className="text-sm text-slate-600 md:col-span-3">{message}</p>
+        )}
       </form>
 
       <div className="overflow-x-auto rounded-lg border border-slate-200">
@@ -69,11 +95,15 @@ const ClubHeadMembersPage = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td className="px-3 py-3 text-slate-500" colSpan={4}>Loading members...</td>
+                <td className="px-3 py-3 text-slate-500" colSpan={4}>
+                  Loading members...
+                </td>
               </tr>
             ) : members.length === 0 ? (
               <tr>
-                <td className="px-3 py-3 text-slate-500" colSpan={4}>No members found.</td>
+                <td className="px-3 py-3 text-slate-500" colSpan={4}>
+                  No members found.
+                </td>
               </tr>
             ) : (
               members.map((m) => (
@@ -81,7 +111,9 @@ const ClubHeadMembersPage = () => {
                   <td className="px-3 py-2">{m.name || "-"}</td>
                   <td className="px-3 py-2">{m.email}</td>
                   <td className="px-3 py-2">{m.role}</td>
-                  <td className="px-3 py-2">{m.isActive ? "Active" : "Inactive"}</td>
+                  <td className="px-3 py-2">
+                    {m.isActive ? "Active" : "Inactive"}
+                  </td>
                 </tr>
               ))
             )}

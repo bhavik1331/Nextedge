@@ -2,14 +2,24 @@ import React from "react";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
-const TablePagination = ({ page, pages, total, limit, onPageChange, onLimitChange }) => {
+const TablePagination = ({
+  page,
+  pages,
+  total,
+  limit,
+  onPageChange,
+  onLimitChange,
+}) => {
   const safePages = Math.max(Number(pages) || 1, 1);
   const safePage = Math.min(Math.max(Number(page) || 1, 1), safePages);
 
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm">
       <p className="text-slate-600">
-        Total records: <span className="font-semibold text-slate-800">{Number(total) || 0}</span>
+        Total records:{" "}
+        <span className="font-semibold text-slate-800">
+          {Number(total) || 0}
+        </span>
       </p>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -37,7 +47,9 @@ const TablePagination = ({ page, pages, total, limit, onPageChange, onLimitChang
         >
           Previous
         </button>
-        <span className="min-w-24 text-center text-slate-700">Page {safePage} of {safePages}</span>
+        <span className="min-w-24 text-center text-slate-700">
+          Page {safePage} of {safePages}
+        </span>
         <button
           type="button"
           className="rounded border border-slate-300 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"

@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { api } from "../api/axios.js";
 
-const AdminEventTable = ({ events, onEdit, onDelete, registrationsBasePath = "/admin/events" }) => {
+const AdminEventTable = ({
+  events,
+  onEdit,
+  onDelete,
+  registrationsBasePath = "/admin/events",
+}) => {
   const deleteEvent = async (id) => {
     if (!confirm("Delete this event?")) return;
     await api.delete(`/events/${id}`);
@@ -20,10 +25,12 @@ const AdminEventTable = ({ events, onEdit, onDelete, registrationsBasePath = "/a
           </tr>
         </thead>
         <tbody>
-          {events.map(event => (
+          {events.map((event) => (
             <tr key={event._id} className="border-t">
               <td className="p-4 font-medium">{event.title}</td>
-              <td>{new Date(event.date || event.eventStartDate).toDateString()}</td>
+              <td>
+                {new Date(event.date || event.eventStartDate).toDateString()}
+              </td>
               <td>
                 {new Date(event.eventStartDate || event.date) >= new Date()
                   ? "Upcoming"

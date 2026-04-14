@@ -1,19 +1,19 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const notificationSchema = new mongoose.Schema(
   {
     type: {
       type: String,
       enum: [
-        'PAYMENT_SUBMITTED',
-        'PAYMENT_APPROVED',
-        'PAYMENT_REJECTED',
-        'FUND_REQUESTED',
-        'FUND_APPROVED',
-        'FUND_REJECTED',
-        'FUND_RELEASED',
-        'FEE_REMINDER',
-        'CLARIFICATION_REQUESTED',
+        "PAYMENT_SUBMITTED",
+        "PAYMENT_APPROVED",
+        "PAYMENT_REJECTED",
+        "FUND_REQUESTED",
+        "FUND_APPROVED",
+        "FUND_REJECTED",
+        "FUND_RELEASED",
+        "FEE_REMINDER",
+        "CLARIFICATION_REQUESTED",
       ],
       default: null,
     },
@@ -41,7 +41,7 @@ const notificationSchema = new mongoose.Schema(
     },
     recipientType: {
       type: String,
-      enum: ['SINGLE', 'BULK'],
+      enum: ["SINGLE", "BULK"],
       required: true,
     },
     recipientId: {
@@ -50,7 +50,7 @@ const notificationSchema = new mongoose.Schema(
     },
     recipientRole: {
       type: String,
-      enum: ['ADMIN', 'CLUB_HEAD', 'TREASURER', 'MEMBER'],
+      enum: ["ADMIN", "CLUB_HEAD", "TREASURER", "MEMBER"],
       default: null,
     },
     recipientEmail: {
@@ -65,16 +65,16 @@ const notificationSchema = new mongoose.Schema(
     },
     clubName: {
       type: String, // Which club sent it
-      default: 'NextEdge Society',
+      default: "NextEdge Society",
     },
     isRead: {
       type: Boolean,
       default: false,
-    }
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const Notification = mongoose.model('Notification', notificationSchema);
+const Notification = mongoose.model("Notification", notificationSchema);
 
 export default Notification;

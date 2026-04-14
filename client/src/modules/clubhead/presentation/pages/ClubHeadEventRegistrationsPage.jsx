@@ -33,7 +33,12 @@ const ClubHeadEventRegistrationsPage = () => {
 
   return (
     <section className="space-y-4">
-      <Link to="/club-head/events" className="text-sm text-slate-600 hover:underline">Back to Events</Link>
+      <Link
+        to="/club-head/events"
+        className="text-sm text-slate-600 hover:underline"
+      >
+        Back to Events
+      </Link>
       <div>
         <h1 className="text-2xl font-bold">Registrations</h1>
         <p className="text-sm text-slate-600">{event.title}</p>
@@ -54,13 +59,21 @@ const ClubHeadEventRegistrationsPage = () => {
               <tr key={r._id} className="border-t border-slate-100">
                 <td className="px-3 py-2">{r.name}</td>
                 <td className="px-3 py-2">{r.email}</td>
-                <td className="px-3 py-2">{r.type === "member" ? "Member" : "Guest"}</td>
-                <td className="px-3 py-2">{r.registrationTimestamp ? new Date(r.registrationTimestamp).toLocaleString() : "-"}</td>
+                <td className="px-3 py-2">
+                  {r.type === "member" ? "Member" : "Guest"}
+                </td>
+                <td className="px-3 py-2">
+                  {r.registrationTimestamp
+                    ? new Date(r.registrationTimestamp).toLocaleString()
+                    : "-"}
+                </td>
               </tr>
             ))}
             {registrations.length === 0 && (
               <tr>
-                <td className="px-3 py-3 text-slate-500" colSpan={4}>No registrations yet.</td>
+                <td className="px-3 py-3 text-slate-500" colSpan={4}>
+                  No registrations yet.
+                </td>
               </tr>
             )}
           </tbody>

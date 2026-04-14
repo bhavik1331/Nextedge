@@ -14,7 +14,12 @@ const ClubHeadEventsPage = () => {
   return (
     <section className="space-y-4">
       <div>
-        <Link to="/club-head/events" className="text-sm text-slate-600 hover:underline">Back to Events</Link>
+        <Link
+          to="/club-head/events"
+          className="text-sm text-slate-600 hover:underline"
+        >
+          Back to Events
+        </Link>
         <h1 className="mt-2 text-2xl font-bold">Create Event</h1>
       </div>
       <AdminEventForm key={key} onSuccess={handleSuccess} />

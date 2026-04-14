@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 // Strict Frontend Route Access Control
 export const RoleGuard = ({ requiredRole, deniedRedirectByRole }) => {
@@ -15,7 +15,7 @@ export const RoleGuard = ({ requiredRole, deniedRedirectByRole }) => {
   const deniedRedirect =
     deniedRedirectByRole?.[effectiveRole] ||
     deniedRedirectByRole?.default ||
-    '/unauthorized';
+    "/unauthorized";
 
   // 2. Multi-Role Capability (array check)
   if (Array.isArray(requiredRole)) {

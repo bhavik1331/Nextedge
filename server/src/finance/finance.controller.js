@@ -16,10 +16,18 @@ import {
 } from "./finance.service.js";
 
 const approvedStatuses = ["APPROVED", "Approved"];
-const pendingStatuses = ["SUBMITTED", "PENDING_REVIEW", "CLARIFICATION_NEEDED", "Pending", "Pending Review", "Clarification Needed"];
+const pendingStatuses = [
+  "SUBMITTED",
+  "PENDING_REVIEW",
+  "CLARIFICATION_NEEDED",
+  "Pending",
+  "Pending Review",
+  "Clarification Needed",
+];
 const MAX_FINANCE_UPLOAD_BYTES = 5 * 1024 * 1024;
 
-const normalizeStatusInput = (status = "") => String(status).trim().toUpperCase();
+const normalizeStatusInput = (status = "") =>
+  String(status).trim().toUpperCase();
 
 const getActorName = (req) => req.member?.email || "System";
 
@@ -31,27 +39,39 @@ const pushPaymentAudit = (payment, status, note, req) => {
     actedByName: getActorName(req),
     actedAt: new Date(),
   };
-  payment.auditTrail = Array.isArray(payment.auditTrail) ? [...payment.auditTrail, item] : [item];
+  payment.auditTrail = Array.isArray(payment.auditTrail)
+    ? [...payment.auditTrail, item]
+    : [item];
 };
 
 export const submitPayment = async (req, res) => {
   try {
-    const { amount, mode, transactionId, paymentDate, purpose, notes } = req.body;
+    const { amount, mode, transactionId, paymentDate, purpose, notes } =
+      req.body;
 
     if (!amount || Number(amount) <= 0) {
-      return res.status(400).json({ success: false, message: "A valid amount is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "A valid amount is required." });
     }
 
     let proofUrl = null;
     let proofPublicId = null;
 
-    const uploaded = req.files?.proofFile?.[0] || req.files?.proofImage?.[0] || null;
+    const uploaded =
+      req.files?.proofFile?.[0] || req.files?.proofImage?.[0] || null;
     if (uploaded) {
       if (uploaded.size > MAX_FINANCE_UPLOAD_BYTES) {
-        return res.status(400).json({ success: false, message: "File size must be 5MB or less." });
+        return res
+          .status(400)
+          .json({ success: false, message: "File size must be 5MB or less." });
       }
       const fileName = `payment_proof_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      const result = await uploadBuffer(uploaded.buffer, "payments/proofs", fileName);
+      const result = await uploadBuffer(
+        uploaded.buffer,
+        "payments/proofs",
+        fileName,
+      );
       proofUrl = result.url;
       proofPublicId = result.fileId;
     }
@@ -100,7 +120,9 @@ export const submitPayment = async (req, res) => {
 
 export const getMyPayments = async (req, res) => {
   try {
-    const payments = await Payment.find({ memberId: req.member.id }).sort({ createdAt: -1 }).lean();
+    const payments = await Payment.find({ memberId: req.member.id })
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ success: true, payments });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -112,7 +134,11 @@ export const getOverview = async (req, res) => {
     const period = getCurrentPeriod();
     const periodStart = new Date(`${period}-01-01T00:00:00.000Z`);
 
-    const openingSeed = await LedgerEntry.findOne({ date: { $lt: periodStart } }).sort({ date: -1 }).lean();
+    const openingSeed = await LedgerEntry.findOne({
+      date: { $lt: periodStart },
+    })
+      .sort({ date: -1 })
+      .lean();
     const latest = await LedgerEntry.findOne().sort({ createdAt: -1 }).lean();
 
     const [
@@ -135,7 +161,13 @@ export const getOverview = async (req, res) => {
       Payment.distinct("memberId", { status: { $in: approvedStatuses } }),
       FundRequest.aggregate([
         { $match: { status: { $in: ["SUBMITTED", "PENDING_APPROVAL"] } } },
-        { $group: { _id: null, count: { $sum: 1 }, total: { $sum: "$amountRequested" } } },
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 },
+            total: { $sum: "$amountRequested" },
+          },
+        },
       ]),
       Member.countDocuments({ isActive: true }),
       Payment.countDocuments({ status: { $in: approvedStatuses } }),
@@ -152,7 +184,10 @@ export const getOverview = async (req, res) => {
         totalMembersPaid: membersPaid.length,
         pendingFundRequestsCount: pendingFundStats[0]?.count || 0,
         pendingFundRequestsAmount: pendingFundStats[0]?.total || 0,
-        feeCollectionRate: totalMembers > 0 ? Math.round((membersPaid.length / totalMembers) * 100) : 0,
+        feeCollectionRate:
+          totalMembers > 0
+            ? Math.round((membersPaid.length / totalMembers) * 100)
+            : 0,
         totalMembers,
         approvedPaymentsCount,
         pendingPaymentsCount,
@@ -166,10 +201,15 @@ export const getOverview = async (req, res) => {
 export const getMemberFees = async (req, res) => {
   try {
     const { status, mode, search } = req.query;
-    const members = await Member.find({ isActive: true }).select("name email role").sort({ name: 1 }).lean();
+    const members = await Member.find({ isActive: true })
+      .select("name email role")
+      .sort({ name: 1 })
+      .lean();
 
     const memberIds = members.map((m) => m._id);
-    const payments = await Payment.find({ memberId: { $in: memberIds } }).sort({ createdAt: -1 }).lean();
+    const payments = await Payment.find({ memberId: { $in: memberIds } })
+      .sort({ createdAt: -1 })
+      .lean();
 
     const latestByMember = new Map();
     for (const p of payments) {
@@ -183,7 +223,10 @@ export const getMemberFees = async (req, res) => {
       const paymentStatus = p?.status;
       let normalized = "Pending";
       if (approvedStatuses.includes(paymentStatus)) normalized = "Paid";
-      else if (["CLARIFICATION_NEEDED", "Clarification Needed"].includes(paymentStatus)) normalized = "Partial";
+      else if (
+        ["CLARIFICATION_NEEDED", "Clarification Needed"].includes(paymentStatus)
+      )
+        normalized = "Partial";
 
       return {
         memberId: m._id,
@@ -192,22 +235,33 @@ export const getMemberFees = async (req, res) => {
         feeAmount: p?.amount || 0,
         paymentStatus: normalized,
         paymentMode: p?.mode || p?.paymentType?.toUpperCase() || null,
-        datePaid: approvedStatuses.includes(paymentStatus) ? p?.actionedAt || p?.updatedAt : null,
+        datePaid: approvedStatuses.includes(paymentStatus)
+          ? p?.actionedAt || p?.updatedAt
+          : null,
         latestPaymentId: p?._id || null,
       };
     });
 
     if (status) {
-      rows = rows.filter((r) => r.paymentStatus.toLowerCase() === String(status).toLowerCase());
+      rows = rows.filter(
+        (r) => r.paymentStatus.toLowerCase() === String(status).toLowerCase(),
+      );
     }
 
     if (mode) {
-      rows = rows.filter((r) => (r.paymentMode || "").toLowerCase() === String(mode).toLowerCase());
+      rows = rows.filter(
+        (r) =>
+          (r.paymentMode || "").toLowerCase() === String(mode).toLowerCase(),
+      );
     }
 
     if (search) {
       const q = String(search).toLowerCase();
-      rows = rows.filter((r) => r.memberName.toLowerCase().includes(q) || r.membershipId.toLowerCase().includes(q));
+      rows = rows.filter(
+        (r) =>
+          r.memberName.toLowerCase().includes(q) ||
+          r.membershipId.toLowerCase().includes(q),
+      );
     }
 
     res.json({ success: true, members: rows });
@@ -223,7 +277,9 @@ export const markMemberPaid = async (req, res) => {
 
     const member = await Member.findById(id);
     if (!member) {
-      return res.status(404).json({ success: false, message: "Member not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found." });
     }
 
     const payment = await Payment.create({
@@ -273,7 +329,9 @@ export const sendFeeReminder = async (req, res) => {
   try {
     const member = await Member.findById(req.params.id);
     if (!member) {
-      return res.status(404).json({ success: false, message: "Member not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Member not found." });
     }
 
     await Notification.create({
@@ -295,10 +353,15 @@ export const sendFeeReminder = async (req, res) => {
 export const exportMemberFeesCsv = async (req, res) => {
   try {
     const { status, mode, search } = req.query;
-    const members = await Member.find({ isActive: true }).select("name email role").sort({ name: 1 }).lean();
+    const members = await Member.find({ isActive: true })
+      .select("name email role")
+      .sort({ name: 1 })
+      .lean();
 
     const memberIds = members.map((m) => m._id);
-    const payments = await Payment.find({ memberId: { $in: memberIds } }).sort({ createdAt: -1 }).lean();
+    const payments = await Payment.find({ memberId: { $in: memberIds } })
+      .sort({ createdAt: -1 })
+      .lean();
 
     const latestByMember = new Map();
     for (const p of payments) {
@@ -312,7 +375,10 @@ export const exportMemberFeesCsv = async (req, res) => {
       const paymentStatus = p?.status;
       let normalized = "Pending";
       if (approvedStatuses.includes(paymentStatus)) normalized = "Paid";
-      else if (["CLARIFICATION_NEEDED", "Clarification Needed"].includes(paymentStatus)) normalized = "Partial";
+      else if (
+        ["CLARIFICATION_NEEDED", "Clarification Needed"].includes(paymentStatus)
+      )
+        normalized = "Partial";
 
       return {
         memberName: m.name,
@@ -320,22 +386,40 @@ export const exportMemberFeesCsv = async (req, res) => {
         feeAmount: p?.amount || 0,
         paymentStatus: normalized,
         paymentMode: p?.mode || p?.paymentType?.toUpperCase() || "",
-        datePaid: approvedStatuses.includes(paymentStatus) ? p?.actionedAt || p?.updatedAt : null,
+        datePaid: approvedStatuses.includes(paymentStatus)
+          ? p?.actionedAt || p?.updatedAt
+          : null,
       };
     });
 
     if (status) {
-      rows = rows.filter((r) => r.paymentStatus.toLowerCase() === String(status).toLowerCase());
+      rows = rows.filter(
+        (r) => r.paymentStatus.toLowerCase() === String(status).toLowerCase(),
+      );
     }
     if (mode) {
-      rows = rows.filter((r) => (r.paymentMode || "").toLowerCase() === String(mode).toLowerCase());
+      rows = rows.filter(
+        (r) =>
+          (r.paymentMode || "").toLowerCase() === String(mode).toLowerCase(),
+      );
     }
     if (search) {
       const q = String(search).toLowerCase();
-      rows = rows.filter((r) => r.memberName.toLowerCase().includes(q) || r.membershipId.toLowerCase().includes(q));
+      rows = rows.filter(
+        (r) =>
+          r.memberName.toLowerCase().includes(q) ||
+          r.membershipId.toLowerCase().includes(q),
+      );
     }
 
-    const headers = ["Member Name", "Membership ID", "Fee Amount", "Payment Status", "Payment Mode", "Date Paid"];
+    const headers = [
+      "Member Name",
+      "Membership ID",
+      "Fee Amount",
+      "Payment Status",
+      "Payment Mode",
+      "Date Paid",
+    ];
     const csvRows = rows.map((r) => [
       r.memberName,
       r.membershipId,
@@ -353,7 +437,15 @@ export const exportMemberFeesCsv = async (req, res) => {
 
 export const listPayments = async (req, res) => {
   try {
-    const { status, mode, from, to, memberName, page = 1, limit = 25 } = req.query;
+    const {
+      status,
+      mode,
+      from,
+      to,
+      memberName,
+      page = 1,
+      limit = 25,
+    } = req.query;
     const parsedPage = Math.max(Number(page) || 1, 1);
     const parsedLimit = Math.min(Math.max(Number(limit) || 25, 1), 200);
 
@@ -361,7 +453,9 @@ export const listPayments = async (req, res) => {
     if (status) {
       const normalized = normalizeStatusInput(status);
       if (normalized === "PENDING") {
-        query.status = { $in: ["PENDING_REVIEW", "SUBMITTED", "Pending", "Pending Review"] };
+        query.status = {
+          $in: ["PENDING_REVIEW", "SUBMITTED", "Pending", "Pending Review"],
+        };
       } else if (normalized === "APPROVED") {
         query.status = { $in: approvedStatuses };
       } else if (normalized === "REJECTED") {
@@ -376,7 +470,11 @@ export const listPayments = async (req, res) => {
     }
 
     if (memberName) {
-      const members = await Member.find({ name: { $regex: String(memberName), $options: "i" } }).select("_id").lean();
+      const members = await Member.find({
+        name: { $regex: String(memberName), $options: "i" },
+      })
+        .select("_id")
+        .lean();
       query.memberId = { $in: members.map((m) => m._id) };
     }
 
@@ -421,7 +519,9 @@ export const exportPayments = async (req, res) => {
     if (status) {
       const normalized = normalizeStatusInput(status);
       if (normalized === "PENDING") {
-        query.status = { $in: ["PENDING_REVIEW", "SUBMITTED", "Pending", "Pending Review"] };
+        query.status = {
+          $in: ["PENDING_REVIEW", "SUBMITTED", "Pending", "Pending Review"],
+        };
       } else if (normalized === "APPROVED") {
         query.status = { $in: approvedStatuses };
       } else if (normalized === "REJECTED") {
@@ -437,7 +537,11 @@ export const exportPayments = async (req, res) => {
       if (to) query.createdAt.$lte = new Date(to);
     }
     if (memberName) {
-      const members = await Member.find({ name: { $regex: String(memberName), $options: "i" } }).select("_id").lean();
+      const members = await Member.find({
+        name: { $regex: String(memberName), $options: "i" },
+      })
+        .select("_id")
+        .lean();
       query.memberId = { $in: members.map((m) => m._id) };
     }
 
@@ -465,12 +569,20 @@ export const exportPayments = async (req, res) => {
       p.transactionId || "",
       p.status || "",
       p.approvedByName || "",
-      p.submittedAt ? new Date(p.submittedAt).toLocaleString() : new Date(p.createdAt).toLocaleString(),
+      p.submittedAt
+        ? new Date(p.submittedAt).toLocaleString()
+        : new Date(p.createdAt).toLocaleString(),
       p.actionedAt ? new Date(p.actionedAt).toLocaleString() : "",
     ]);
 
     if (format === "pdf") {
-      return sendPdfTable(res, `payment-history-${Date.now()}.pdf`, "Payment History", columns, rows);
+      return sendPdfTable(
+        res,
+        `payment-history-${Date.now()}.pdf`,
+        "Payment History",
+        columns,
+        rows,
+      );
     }
 
     return sendCsvFile(res, `payment-history-${Date.now()}.csv`, columns, rows);
@@ -481,9 +593,13 @@ export const exportPayments = async (req, res) => {
 
 export const getPaymentById = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id).populate("memberId", "name email role").lean();
+    const payment = await Payment.findById(req.params.id)
+      .populate("memberId", "name email role")
+      .lean();
     if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Payment not found." });
     }
     res.json({ success: true, payment });
   } catch (error) {
@@ -493,14 +609,21 @@ export const getPaymentById = async (req, res) => {
 
 export const approvePayment = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id).populate("memberId", "name email role");
+    const payment = await Payment.findById(req.params.id).populate(
+      "memberId",
+      "name email role",
+    );
     if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Payment not found." });
     }
 
     const alreadyApproved = approvedStatuses.includes(payment.status);
     if (alreadyApproved) {
-      return res.status(400).json({ success: false, message: "Payment already approved." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment already approved." });
     }
 
     payment.status = "APPROVED";
@@ -509,7 +632,8 @@ export const approvePayment = async (req, res) => {
     payment.actionedAt = new Date();
     payment.rejectionReason = null;
 
-    const receiptNumber = payment.receiptNumber || (await getNextReceiptNumber());
+    const receiptNumber =
+      payment.receiptNumber || (await getNextReceiptNumber());
     const receipt = await generateReceiptPdf({
       payment,
       memberName: payment.memberId?.name || "Member",
@@ -560,12 +684,19 @@ export const rejectPayment = async (req, res) => {
   try {
     const reason = req.body?.reason;
     if (!reason) {
-      return res.status(400).json({ success: false, message: "Rejection reason is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Rejection reason is required." });
     }
 
-    const payment = await Payment.findById(req.params.id).populate("memberId", "name email");
+    const payment = await Payment.findById(req.params.id).populate(
+      "memberId",
+      "name email",
+    );
     if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Payment not found." });
     }
 
     payment.status = "REJECTED";
@@ -597,12 +728,19 @@ export const requestPaymentClarification = async (req, res) => {
   try {
     const note = req.body?.note;
     if (!note) {
-      return res.status(400).json({ success: false, message: "Clarification note is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Clarification note is required." });
     }
 
-    const payment = await Payment.findById(req.params.id).populate("memberId", "name email");
+    const payment = await Payment.findById(req.params.id).populate(
+      "memberId",
+      "name email",
+    );
     if (!payment) {
-      return res.status(404).json({ success: false, message: "Payment not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Payment not found." });
     }
 
     payment.status = "CLARIFICATION_NEEDED";
@@ -632,9 +770,13 @@ export const requestPaymentClarification = async (req, res) => {
 
 export const getReceipt = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id).populate("memberId", "_id email").lean();
+    const payment = await Payment.findById(req.params.id)
+      .populate("memberId", "_id email")
+      .lean();
     if (!payment || !payment.receiptUrl) {
-      return res.status(404).json({ success: false, message: "Receipt not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Receipt not found." });
     }
 
     const requesterRole = req.member?.role;
@@ -648,7 +790,11 @@ export const getReceipt = async (req, res) => {
       return res.status(403).json({ success: false, message: "Forbidden." });
     }
 
-    res.json({ success: true, receiptUrl: payment.receiptUrl, receiptNumber: payment.receiptNumber });
+    res.json({
+      success: true,
+      receiptUrl: payment.receiptUrl,
+      receiptNumber: payment.receiptNumber,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -666,7 +812,11 @@ export const listLedger = async (req, res) => {
 
     const skip = (Number(page) - 1) * Number(limit);
     const [entries, total] = await Promise.all([
-      LedgerEntry.find(query).sort({ date: -1, createdAt: -1 }).skip(skip).limit(Number(limit)).lean(),
+      LedgerEntry.find(query)
+        .sort({ date: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .lean(),
       LedgerEntry.countDocuments(query),
     ]);
 
@@ -688,8 +838,18 @@ export const listLedger = async (req, res) => {
 export const exportLedger = async (req, res) => {
   try {
     const format = String(req.query.format || "csv").toLowerCase();
-    const entries = await LedgerEntry.find({}).sort({ date: 1, createdAt: 1 }).lean();
-    const columns = ["Date", "Description", "Type", "Debit", "Credit", "Running Balance", "Category"];
+    const entries = await LedgerEntry.find({})
+      .sort({ date: 1, createdAt: 1 })
+      .lean();
+    const columns = [
+      "Date",
+      "Description",
+      "Type",
+      "Debit",
+      "Credit",
+      "Running Balance",
+      "Category",
+    ];
     const rows = entries.map((e) => [
       new Date(e.date).toLocaleDateString(),
       e.description,
@@ -701,7 +861,13 @@ export const exportLedger = async (req, res) => {
     ]);
 
     if (format === "pdf") {
-      return sendPdfTable(res, `ledger-${Date.now()}.pdf`, "Ledger Export", columns, rows);
+      return sendPdfTable(
+        res,
+        `ledger-${Date.now()}.pdf`,
+        "Ledger Export",
+        columns,
+        rows,
+      );
     }
 
     return sendCsvFile(res, `ledger-${Date.now()}.csv`, columns, rows);
@@ -715,7 +881,12 @@ export const addManualLedgerEntry = async (req, res) => {
     const { description, type, amount, category } = req.body;
 
     if (!description || !type || !amount) {
-      return res.status(400).json({ success: false, message: "Description, type and amount are required." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Description, type and amount are required.",
+        });
     }
 
     const entry = await createLedgerEntry({
@@ -740,15 +911,21 @@ export const reverseLedgerEntry = async (req, res) => {
   try {
     const { reason } = req.body;
     if (!reason) {
-      return res.status(400).json({ success: false, message: "Reversal reason is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Reversal reason is required." });
     }
 
     const original = await LedgerEntry.findById(req.params.id);
     if (!original) {
-      return res.status(404).json({ success: false, message: "Ledger entry not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Ledger entry not found." });
     }
     if (original.isReversed) {
-      return res.status(400).json({ success: false, message: "Entry already reversed." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Entry already reversed." });
     }
 
     const reversalType = original.type === "CREDIT" ? "DEBIT" : "CREDIT";
@@ -777,9 +954,21 @@ export const reverseLedgerEntry = async (req, res) => {
 
 export const submitFundRequest = async (req, res) => {
   try {
-    const { clubName, eventName, amountRequested, purpose, requiredByDate } = req.body;
-    if (!clubName || !eventName || !amountRequested || !purpose || !requiredByDate) {
-      return res.status(400).json({ success: false, message: "All fund request fields are required." });
+    const { clubName, eventName, amountRequested, purpose, requiredByDate } =
+      req.body;
+    if (
+      !clubName ||
+      !eventName ||
+      !amountRequested ||
+      !purpose ||
+      !requiredByDate
+    ) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "All fund request fields are required.",
+        });
     }
 
     const fr = await FundRequest.create({
@@ -818,7 +1007,11 @@ export const listFundRequests = async (req, res) => {
     const query = status ? { status: String(status).toUpperCase() } : {};
     const skip = (parsedPage - 1) * parsedLimit;
     const [fundRequests, total] = await Promise.all([
-      FundRequest.find(query).sort({ createdAt: -1 }).skip(skip).limit(parsedLimit).lean(),
+      FundRequest.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parsedLimit)
+        .lean(),
       FundRequest.countDocuments(query),
     ]);
     res.json({
@@ -838,7 +1031,11 @@ export const listFundRequests = async (req, res) => {
 
 export const listMyFundRequests = async (req, res) => {
   try {
-    const fundRequests = await FundRequest.find({ requestedById: req.member.id }).sort({ createdAt: -1 }).lean();
+    const fundRequests = await FundRequest.find({
+      requestedById: req.member.id,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ success: true, fundRequests });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -849,7 +1046,9 @@ export const getFundRequestById = async (req, res) => {
   try {
     const fundRequest = await FundRequest.findById(req.params.id).lean();
     if (!fundRequest) {
-      return res.status(404).json({ success: false, message: "Fund request not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Fund request not found." });
     }
 
     const isOwner = String(fundRequest.requestedById) === String(req.member.id);
@@ -868,10 +1067,17 @@ export const approveFundRequest = async (req, res) => {
   try {
     const fr = await FundRequest.findById(req.params.id);
     if (!fr) {
-      return res.status(404).json({ success: false, message: "Fund request not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Fund request not found." });
     }
     if (fr.status === "REJECTED") {
-      return res.status(400).json({ success: false, message: "Rejected fund request cannot be approved." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Rejected fund request cannot be approved.",
+        });
     }
 
     fr.status = "APPROVED";
@@ -881,7 +1087,9 @@ export const approveFundRequest = async (req, res) => {
     fr.treasurerNotes = req.body?.note || null;
     await fr.save();
 
-    const approvedAmount = Number(req.body?.approvedAmount || fr.amountRequested || 0);
+    const approvedAmount = Number(
+      req.body?.approvedAmount || fr.amountRequested || 0,
+    );
     if (approvedAmount > 0) {
       const existingReleaseEntry = await LedgerEntry.findOne({
         referenceType: "FUND_RELEASE",
@@ -924,12 +1132,16 @@ export const rejectFundRequest = async (req, res) => {
   try {
     const { reason } = req.body;
     if (!reason) {
-      return res.status(400).json({ success: false, message: "Rejection reason is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Rejection reason is required." });
     }
 
     const fr = await FundRequest.findById(req.params.id);
     if (!fr) {
-      return res.status(404).json({ success: false, message: "Fund request not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Fund request not found." });
     }
 
     fr.status = "REJECTED";
@@ -960,10 +1172,17 @@ export const releaseFundRequest = async (req, res) => {
     const { amountReleased, note } = req.body;
     const fr = await FundRequest.findById(req.params.id);
     if (!fr) {
-      return res.status(404).json({ success: false, message: "Fund request not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Fund request not found." });
     }
     if (fr.status === "REJECTED") {
-      return res.status(400).json({ success: false, message: "Rejected fund request cannot be released." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Rejected fund request cannot be released.",
+        });
     }
 
     const released = Number(amountReleased || fr.amountRequested);
@@ -1016,7 +1235,12 @@ export const createExpense = async (req, res) => {
   try {
     const { title, amount, date, category, description } = req.body;
     if (!title || !amount || !date || !category) {
-      return res.status(400).json({ success: false, message: "Title, amount, date and category are required." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Title, amount, date and category are required.",
+        });
     }
 
     let receiptFileUrl = null;
@@ -1024,10 +1248,16 @@ export const createExpense = async (req, res) => {
     const uploaded = req.files?.receiptFile?.[0] || null;
     if (uploaded) {
       if (uploaded.size > MAX_FINANCE_UPLOAD_BYTES) {
-        return res.status(400).json({ success: false, message: "File size must be 5MB or less." });
+        return res
+          .status(400)
+          .json({ success: false, message: "File size must be 5MB or less." });
       }
       const fileName = `expense_receipt_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      const result = await uploadBuffer(uploaded.buffer, "expenses/receipts", fileName);
+      const result = await uploadBuffer(
+        uploaded.buffer,
+        "expenses/receipts",
+        fileName,
+      );
       receiptFileUrl = result.url;
       receiptFileId = result.fileId;
     }
@@ -1083,7 +1313,11 @@ export const listExpenses = async (req, res) => {
 
     const skip = (parsedPage - 1) * parsedLimit;
     const [expenses, total] = await Promise.all([
-      Expense.find(query).sort({ date: -1, createdAt: -1 }).skip(skip).limit(parsedLimit).lean(),
+      Expense.find(query)
+        .sort({ date: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(parsedLimit)
+        .lean(),
       Expense.countDocuments(query),
     ]);
     res.json({
@@ -1105,14 +1339,17 @@ export const updateExpense = async (req, res) => {
   try {
     const expense = await Expense.findById(req.params.id);
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found." });
     }
 
     const { title, amount, date, category, description } = req.body;
     if (title !== undefined) expense.title = title;
     if (amount !== undefined) expense.amount = Number(amount);
     if (date !== undefined) expense.date = new Date(date);
-    if (category !== undefined) expense.category = String(category).toUpperCase();
+    if (category !== undefined)
+      expense.category = String(category).toUpperCase();
     if (description !== undefined) expense.description = description;
 
     await expense.save();
@@ -1126,16 +1363,22 @@ export const reverseExpense = async (req, res) => {
   try {
     const { reason } = req.body;
     if (!reason) {
-      return res.status(400).json({ success: false, message: "Reversal reason is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Reversal reason is required." });
     }
 
     const expense = await Expense.findById(req.params.id);
     if (!expense) {
-      return res.status(404).json({ success: false, message: "Expense not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Expense not found." });
     }
 
     if (expense.isReversed) {
-      return res.status(400).json({ success: false, message: "Expense already reversed." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Expense already reversed." });
     }
 
     const reversal = await createLedgerEntry({
@@ -1174,7 +1417,14 @@ export const reportFeeCollection = async (req, res) => {
       { $sort: { _id: 1 } },
     ]);
 
-    res.json({ success: true, monthlyFeeCollection: rows.map((r) => ({ month: r._id, total: r.total, count: r.count })) });
+    res.json({
+      success: true,
+      monthlyFeeCollection: rows.map((r) => ({
+        month: r._id,
+        total: r.total,
+        count: r.count,
+      })),
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1188,7 +1438,10 @@ export const reportExpenses = async (req, res) => {
       { $sort: { _id: 1 } },
     ]);
 
-    res.json({ success: true, expenseBreakdown: rows.map((r) => ({ category: r._id, total: r.total })) });
+    res.json({
+      success: true,
+      expenseBreakdown: rows.map((r) => ({ category: r._id, total: r.total })),
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -1209,7 +1462,11 @@ export const reportFundRequests = async (req, res) => {
 
     res.json({
       success: true,
-      fundRequestSummary: rows.map((r) => ({ clubName: r._id, requested: r.requested, released: r.released })),
+      fundRequestSummary: rows.map((r) => ({
+        clubName: r._id,
+        requested: r.requested,
+        released: r.released,
+      })),
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -1218,7 +1475,9 @@ export const reportFundRequests = async (req, res) => {
 
 export const reportLedger = async (req, res) => {
   try {
-    const entries = await LedgerEntry.find().sort({ date: 1, createdAt: 1 }).lean();
+    const entries = await LedgerEntry.find()
+      .sort({ date: 1, createdAt: 1 })
+      .lean();
     res.json({ success: true, entries });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -1229,7 +1488,9 @@ export const reportSummary = async (req, res) => {
   try {
     const { from, to } = req.query;
     if (!from || !to) {
-      return res.status(400).json({ success: false, message: "from and to are required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "from and to are required." });
     }
 
     const start = new Date(from);
@@ -1288,9 +1549,15 @@ export const listMyNotifications = async (req, res) => {
 
 export const markNotificationRead = async (req, res) => {
   try {
-    const notification = await Notification.findByIdAndUpdate(req.params.id, { isRead: true }, { new: true }).lean();
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { isRead: true },
+      { new: true },
+    ).lean();
     if (!notification) {
-      return res.status(404).json({ success: false, message: "Notification not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Notification not found." });
     }
     res.json({ success: true, notification });
   } catch (error) {
@@ -1302,9 +1569,13 @@ export const markAllNotificationsRead = async (req, res) => {
   try {
     await Notification.updateMany(
       {
-        $or: [{ recipientEmail: req.member.email }, { recipientType: "BULK" }, { recipientId: req.member.id }],
+        $or: [
+          { recipientEmail: req.member.email },
+          { recipientType: "BULK" },
+          { recipientId: req.member.id },
+        ],
       },
-      { $set: { isRead: true } }
+      { $set: { isRead: true } },
     );
 
     res.json({ success: true, message: "All notifications marked as read." });

@@ -22,7 +22,10 @@ import { authenticateMember } from "../members/member.middleware.js";
 import { authorizeRole } from "../middlewares/authorizeRole.js";
 
 const router = express.Router();
-const eventManagerGuard = [authenticateMember, authorizeRole("ADMIN", "CLUB_HEAD")];
+const eventManagerGuard = [
+  authenticateMember,
+  authorizeRole("ADMIN", "CLUB_HEAD"),
+];
 
 // Protected routes - Admin and Club Head
 router.post(
@@ -56,8 +59,16 @@ router.get("/gallery", getAllEventImages);
 
 // Registration (must be before /:id so :eventId is not consumed by :id)
 router.post("/:eventId/register", optionalMemberAuth, registerForEvent);
-router.get("/:eventId/register/status", optionalMemberAuth, getRegistrationStatus);
-router.get("/:eventId/registrations", ...eventManagerGuard, getEventRegistrations);
+router.get(
+  "/:eventId/register/status",
+  optionalMemberAuth,
+  getRegistrationStatus,
+);
+router.get(
+  "/:eventId/registrations",
+  ...eventManagerGuard,
+  getEventRegistrations,
+);
 
 router.get("/:id", getEventById);
 
